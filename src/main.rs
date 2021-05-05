@@ -8,6 +8,6 @@ fn main() {}
 
 #[test]
 fn html() {
-    let expr = html::HtmlParser::new().parse("<div />").unwrap();
+    let expr = html::HtmlParser::new().parse("<div></div>").unwrap();
     assert_eq!(&format!("{}", expr), "div");
 }

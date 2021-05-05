@@ -2,8 +2,8 @@ use std::str;
 
 grammar;
 
-pub Html = {
-    "<" <Tag> "/>",
+pub Html: String = {
+    "<" <t:Tag> ">" "</" <s:Tag> ">" => t
 }
 
 Tag: String = {
