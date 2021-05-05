@@ -1,0 +1,11 @@
+use std::str;
+
+grammar;
+
+pub Html = {
+    "<" <Tag> "/>",
+}
+
+Tag: String = {
+    r"[a-z]+" => format!("{}", <>)
+}
