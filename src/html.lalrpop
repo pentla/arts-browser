@@ -3,9 +3,13 @@ use std::str;
 grammar;
 
 pub Html: String = {
-    "<" <t:Tag> ">" "</" <s:Tag> ">" => t
+    Tag
 }
 
-Tag: String = {
+pub Tag: String = {
+    "<" <t:ElementName> ">" "</" <s:ElementName> ">" => t
+}
+
+ElementName: String = {
     r"[a-z]+" => format!("{}", <>)
 }
