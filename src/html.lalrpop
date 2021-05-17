@@ -1,18 +1,19 @@
 use std::str;
+use crate::ast::{Element};
 
 grammar;
 
-pub Html: String = {
+pub Html: Element = {
     Tag
 }
 
-pub Tag: String = {
-    Text,
+pub Tag: Element = {
+    Text => Element::new(String::from(<>)),
     "<" <t:ElementName> ">" Tag "</" <s:ElementName> ">" => {
         if t != s {
-            return String::from("error")
+            return Element::new(String::from("error"));
         }
-        t
+        Element::new(t)
     },
 }
 
