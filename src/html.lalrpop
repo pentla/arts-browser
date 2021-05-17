@@ -7,9 +7,19 @@ pub Html: String = {
 }
 
 pub Tag: String = {
-    "<" <t:ElementName> ">" "</" <s:ElementName> ">" => t
+    Text,
+    "<" <t:ElementName> ">" Tag "</" <s:ElementName> ">" => {
+        if t != s {
+            return String::from("error")
+        }
+        t
+    },
 }
 
 ElementName: String = {
+    r"[a-z]+" => format!("{}", <>)
+}
+
+Text: String = {
     r"[a-z]+" => format!("{}", <>)
 }
