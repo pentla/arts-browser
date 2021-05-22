@@ -1,8 +1,7 @@
 #[derive(Debug)]
 pub struct Element {
     pub name: ElementType,
-    pub children: Vec<Element>,
-    pub text: String,
+    pub children: Vec<Box<Element>>,
 }
 
 impl Element {
@@ -15,7 +14,6 @@ impl Element {
         };
         Element {
             name: elm_name,
-            text: String::from(""),
             children: vec![],
         }
     }
