@@ -5,8 +5,20 @@ grammar;
 
 pub Html: Box<Element> = {
     Tag
-}
+};
 
+pub Tags = Sibling<Tag>;
+
+Sibling<T>: Vec<T> = {
+    <mut v:(<T> ",")*> <e:T?> => match e {
+        None => v,
+        Some(e) => {
+            println!("{:?}", e);
+            v.push(e);
+            v
+        }
+    }
+};
 
 pub Tag: Box<Element> = {
     <t:Text> => {
@@ -19,11 +31,11 @@ pub Tag: Box<Element> = {
             return Box::new(Element::new(String::from("error")));
         }
         let mut elem = Box::new(Element::new(t));
-        elem.children = vec![children];
+        elem.children = children;
         return elem;
     },
-}
+};
 
 Text: String = {
     r"[a-z0-9A-Z!?=]+" => format!("{}", <>)
-}
+};

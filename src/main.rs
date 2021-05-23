@@ -45,12 +45,15 @@ fn html() {
     assert_eq!(elem3.children[0].children.len(), 1);
     assert_eq!(elem3.children[0].children[0].name, ElementType::Text);
 
-    // 兄弟要素がある場合
+    // 兄弟要素がある場合(FIX: コンマを入れないとうまく機能しない)
     let test4 = html::HtmlParser::new().parse(
         "
 <html>
     <body>
-        <h1>Title</h1>
+        <h1>Title</h1>,
+        <div>
+            <p>hello</p>
+        </div>
     </body>
 </html>
 ",
@@ -65,4 +68,15 @@ fn html() {
         elem4.children[0].children[1].children[0].name,
         ElementType::P
     );
+
+    // テキストの後に要素が続く場合
+    // let test5 = html::HtmlParser::new().parse("<div>Hello<em>world</em>!</div>");
+    // assert!(test5.is_ok());
+    // let elem5 = test5.unwrap();
+    // assert_eq!(elem5.name, ElementType::Div);
+    // assert_eq!(elem5.children[0].name, ElementType::Text);
+    // assert_eq!(elem5.children[0].text, "Hello");
+    // assert_eq!(elem5.children[1].name, ElementType::Em);
+    // assert_eq!(elem5.children[2].name, ElementType::Text);
+    // assert_eq!(elem5.children[2].text, "!");
 }
