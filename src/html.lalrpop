@@ -3,17 +3,19 @@ use crate::ast::{Element};
 
 grammar;
 
-pub Html: Element = {
+pub Html: Box<Element> = {
     Tag
 }
 
-pub Tag: Element = {
-    Text => Element::new(String::from(<>)),
-    "<" <t:ElementName> ">" Tag "</" <s:ElementName> ">" => {
+pub Tag: Box<Element> = {
+    Text => Box::new(Element::new(String::from(<>))),
+    "<" <t:ElementName> ">" <child:Tag> "</" <s:ElementName> ">" => {
         if t != s {
-            return Element::new(String::from("error"));
+            return Box::new(Element::new(String::from("error")));
         }
-        Element::new(t)
+        let mut elem = Box::new(Element::new(t));
+        elem.children = vec![child];
+        return elem;
     },
 }
 
