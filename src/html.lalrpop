@@ -8,7 +8,11 @@ pub Html: Box<Element> = {
 }
 
 pub Tag: Box<Element> = {
-    Text => Box::new(Element::new(String::from(<>))),
+    <t:Text> => {
+        let mut text_elem = Box::new(Element::new(String::from("text")));
+        text_elem.text = t;
+        text_elem
+    },
     "<" <t:ElementName> ">" <child:Tag> "</" <s:ElementName> ">" => {
         if t != s {
             return Box::new(Element::new(String::from("error")));

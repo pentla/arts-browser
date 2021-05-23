@@ -10,8 +10,20 @@ fn main() {}
 
 #[test]
 fn html() {
-    let div_in_text = html::HtmlParser::new().parse("<div>text</div>");
-    // let div = html::HtmlParser::new().parse("<div></div>").unwrap();
-    assert!(div_in_text.is_ok());
-    assert_eq!(div_in_text.unwrap().name, ElementType::Div);
+    // divの下にtextがある場合
+    let test1 = html::HtmlParser::new().parse("<div>text</div>");
+    assert!(test1.is_ok());
+    assert_eq!(test1.unwrap().name, ElementType::Div);
+
+    // div → span → text
+    let test2 = html::HtmlParser::new().parse("<div><span>text</span></div>");
+    assert!(test2.is_ok());
+    let elem2 = test2.unwrap();
+    assert_eq!(elem2.name, ElementType::Div);
+    // 直下にspanがあるかどうか
+    assert_eq!(elem2.children.len(), 1);
+    assert_eq!(elem2.children[0].name, ElementType::Span);
+    // spanのさらに下にtextがあるか
+    assert_eq!(elem2.children[0].children.len(), 1);
+    assert_eq!(elem2.children[0].children[0].name, ElementType::Text);
 }
