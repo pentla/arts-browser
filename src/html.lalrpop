@@ -7,17 +7,6 @@ pub Html: Box<Element> = {
     Tag
 }
 
-Tags = Sibling<Tag>;
-
-Sibling<T>: Vec<T> = {
-    <mut v:(<T> ",")*> <e:T?> => match e {
-        None => v,
-        Some(e) => {
-            v.push(e);
-            v
-        }
-    }
-}
 
 pub Tag: Box<Element> = {
     <t:Text> => {
@@ -25,20 +14,16 @@ pub Tag: Box<Element> = {
         text_elem.text = t;
         text_elem
     },
-    "<" <t:ElementName> ">" <children:Tags> "</" <s:ElementName> ">" => {
+    "<" <t:Text> ">" <children:Tags> "</" <s:Text> ">" => {
         if t != s {
             return Box::new(Element::new(String::from("error")));
         }
         let mut elem = Box::new(Element::new(t));
-        elem.children = children;
+        elem.children = vec![children];
         return elem;
     },
 }
 
-ElementName: String = {
-    r"[a-z]+" => format!("{}", <>)
-}
-
 Text: String = {
-    r"[a-z]+" => format!("{}", <>)
+    r"[a-z0-9A-Z!?=]+" => format!("{}", <>)
 }

@@ -31,7 +31,7 @@ fn html() {
     let test3 = html::HtmlParser::new().parse(
         "
 <div>
-  <span>text</span>
+  <h1>Text</h1>
 </div>
 ",
     );
@@ -40,7 +40,7 @@ fn html() {
     assert_eq!(elem3.name, ElementType::Div);
     // 直下にspanがあるかどうか
     assert_eq!(elem3.children.len(), 1);
-    assert_eq!(elem3.children[0].name, ElementType::Span);
+    assert_eq!(elem3.children[0].name, ElementType::H1);
     // spanのさらに下にtextがあるか
     assert_eq!(elem3.children[0].children.len(), 1);
     assert_eq!(elem3.children[0].children[0].name, ElementType::Text);
@@ -48,14 +48,11 @@ fn html() {
     // 兄弟要素がある場合
     let test4 = html::HtmlParser::new().parse(
         "
-    <html>
-        <body>
-            <h1>Title</h1>
-            <div>
-                <p>Hello <em>world</em>!</p>
-            </div>
-        </body>
-    </html>
+<html>
+    <body>
+        <h1>Title</h1>
+    </body>
+</html>
 ",
     );
     assert!(test4.is_ok());
