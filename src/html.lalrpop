@@ -24,5 +24,5 @@ pub Tag: Box<Element> = {
 };
 
 Text: String = {
-    r"[a-z0-9A-Z!?=]+" => format!("{}", <>)
+    r"[a-z0-9A-Z!?=,]+" => format!("{}", <>)
 };

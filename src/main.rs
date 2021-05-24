@@ -60,7 +60,7 @@ fn html() {
     );
     assert!(test4.is_ok());
     let elem4 = test4.unwrap();
-    assert_eq!(elem4.name, ElementType::HTML);
+    assert_eq!(elem4.name, ElementType::Html);
     assert_eq!(elem4.children[0].name, ElementType::Body);
     assert_eq!(elem4.children[0].children[0].name, ElementType::H1);
     assert_eq!(elem4.children[0].children[1].name, ElementType::Div);
@@ -70,13 +70,23 @@ fn html() {
     );
 
     // テキストの後に要素が続く場合
-    // let test5 = html::HtmlParser::new().parse("<div>Hello<em>world</em>!</div>");
-    // assert!(test5.is_ok());
-    // let elem5 = test5.unwrap();
-    // assert_eq!(elem5.name, ElementType::Div);
-    // assert_eq!(elem5.children[0].name, ElementType::Text);
-    // assert_eq!(elem5.children[0].text, "Hello");
-    // assert_eq!(elem5.children[1].name, ElementType::Em);
-    // assert_eq!(elem5.children[2].name, ElementType::Text);
-    // assert_eq!(elem5.children[2].text, "!");
+    let test5 = html::HtmlParser::new().parse("<div>Hello<em>world</em>!</div>");
+    assert!(test5.is_ok());
+    let elem5 = test5.unwrap();
+    assert_eq!(elem5.name, ElementType::Div);
+    assert_eq!(elem5.children[0].name, ElementType::Text);
+    assert_eq!(elem5.children[0].text, "Hello");
+    assert_eq!(elem5.children[1].name, ElementType::Em);
+    assert_eq!(elem5.children[2].name, ElementType::Text);
+    assert_eq!(elem5.children[2].text, "!");
+
+    // id, classのパース
+    // let text6 = html::HtmlParser::new().parse("<div id=\"text\" class=\"hi\">text</div>");
+    // assert!(text6.is_ok());
+    // let elem6 = text6.unwrap();
+    // assert_eq!(elem6.name, ElementType::Div);
+    // assert_eq!(elem6.id, "text");
+    // assert_eq!(elem6.class, "hi");
+    // assert_eq!(elem6.children[0].name, ElementType::Text);
+    // assert_eq!(elem6.children[0].text, "text");
 }
