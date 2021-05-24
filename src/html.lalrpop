@@ -7,26 +7,13 @@ pub Html: Box<Element> = {
     Tag
 };
 
-pub Tags = Sibling<Tag>;
-
-Sibling<T>: Vec<T> = {
-    <mut v:(<T> ",")*> <e:T?> => match e {
-        None => v,
-        Some(e) => {
-            println!("{:?}", e);
-            v.push(e);
-            v
-        }
-    }
-};
-
 pub Tag: Box<Element> = {
     <t:Text> => {
         let mut text_elem = Box::new(Element::new(String::from("text")));
         text_elem.text = t;
         text_elem
     },
-    "<" <t:Text> ">" <children:Tags> "</" <s:Text> ">" => {
+    "<" <t:Text> ">" <children:Tag*> "</" <s:Text> ">" => {
         if t != s {
             return Box::new(Element::new(String::from("error")));
         }

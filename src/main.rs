@@ -50,7 +50,7 @@ fn html() {
         "
 <html>
     <body>
-        <h1>Title</h1>,
+        <h1>Title</h1>
         <div>
             <p>hello</p>
         </div>
