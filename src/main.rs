@@ -45,7 +45,7 @@ fn html() {
     assert_eq!(elem3.children[0].children.len(), 1);
     assert_eq!(elem3.children[0].children[0].name, ElementType::Text);
 
-    // 兄弟要素がある場合(FIX: コンマを入れないとうまく機能しない)
+    // 兄弟要素がある場合
     let test4 = html::HtmlParser::new().parse(
         "
 <html>
