@@ -5,7 +5,7 @@ grammar;
 
 pub Html: Box<Element> = {
     Tag
-}
+};
 
 pub Tag: Box<Element> = {
     <t:Text> => {
@@ -13,20 +13,16 @@ pub Tag: Box<Element> = {
         text_elem.text = t;
         text_elem
     },
-    "<" <t:ElementName> ">" <child:Tag> "</" <s:ElementName> ">" => {
+    "<" <t:Text> ">" <children:Tag*> "</" <s:Text> ">" => {
         if t != s {
             return Box::new(Element::new(String::from("error")));
         }
         let mut elem = Box::new(Element::new(t));
-        elem.children = vec![child];
+        elem.children = children;
         return elem;
     },
-}
-
-ElementName: String = {
-    r"[a-z]+" => format!("{}", <>)
-}
+};
 
 Text: String = {
-    r"[a-z]+" => format!("{}", <>)
-}
+    r"[a-z0-9A-Z!?=,]+" => format!("{}", <>)
+};
