@@ -7,8 +7,13 @@ pub struct Element {
     pub class: String,
 }
 
-impl Element {
-    pub fn new(name: String) -> Element {
+trait Node {
+    fn new(name: String) -> Self;
+    fn set_attr(self: &mut Self, attrs: Vec<(String, String)>);
+}
+
+impl Node for Element {
+    fn new(name: String) -> Element {
         let elm_name = element_type(&*name);
         Element {
             name: elm_name,
@@ -18,7 +23,16 @@ impl Element {
             class: String::from(""),
         }
     }
+    fn set_attr(self: &mut Self, attrs: Vec<(String, String)>) {
+        for attr in attrs {
+            match &*attr.0 {
+                "id" => self.id = attr.1,
+            }
+        }
+    }
 }
+
+pub struct ElementAttr {}
 
 #[derive(Debug, PartialEq)]
 pub enum ElementType {
