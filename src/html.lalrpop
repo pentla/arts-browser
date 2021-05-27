@@ -13,16 +13,23 @@ pub Tag: Box<Element> = {
         text_elem.text = t;
         text_elem
     },
-    "<" <t:Text> ">" <children:Tag*> "</" <s:Text> ">" => {
+    "<" <t:Text> <attrs:ElementAttrs*> ">" <children:Tag*> "</" <s:Text> ">" => {
         if t != s {
             return Box::new(Element::new(String::from("error")));
         }
         let mut elem = Box::new(Element::new(t));
         elem.children = children;
+        elem.set_attr(attrs);
         return elem;
     },
 };
 
+ElementAttrs: (String, String) = {
+    <key:Text>"=\"" <value:Text> "\"" => {
+        (key, value)
+    }
+}
+
 Text: String = {
-    r"[a-z0-9A-Z!?=,]+" => format!("{}", <>)
+    r"[a-z0-9A-Z!?,;]+" => format!("{}", <>)
 };

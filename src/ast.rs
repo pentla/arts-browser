@@ -18,6 +18,17 @@ impl Element {
             class: String::from(""),
         }
     }
+    pub fn set_attr(self: &mut Self, attrs: Vec<(String, String)>) {
+        for attr in attrs {
+            let key = &*attr.0;
+            let value = attr.1;
+            match key {
+                "id" => self.id = value,
+                "class" => self.class = value,
+                _ => {}
+            };
+        }
+    }
 }
 
 #[derive(Debug, PartialEq)]
