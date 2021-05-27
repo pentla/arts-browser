@@ -7,13 +7,8 @@ pub struct Element {
     pub class: String,
 }
 
-trait Node {
-    fn new(name: String) -> Self;
-    fn set_attr(self: &mut Self, attrs: Vec<(String, String)>);
-}
-
-impl Node for Element {
-    fn new(name: String) -> Element {
+impl Element {
+    pub fn new(name: String) -> Element {
         let elm_name = element_type(&*name);
         Element {
             name: elm_name,
@@ -23,11 +18,15 @@ impl Node for Element {
             class: String::from(""),
         }
     }
-    fn set_attr(self: &mut Self, attrs: Vec<(String, String)>) {
+    pub fn set_attr(self: &mut Self, attrs: Vec<(String, String)>) {
         for attr in attrs {
-            match &*attr.0 {
-                "id" => self.id = attr.1,
-            }
+            let key = &*attr.0;
+            let value = attr.1;
+            match key {
+                "id" => self.id = value,
+                "class" => self.class = value,
+                _ => {}
+            };
         }
     }
 }

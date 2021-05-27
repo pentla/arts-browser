@@ -19,17 +19,18 @@ pub Tag: Box<Element> = {
         }
         let mut elem = Box::new(Element::new(t));
         elem.children = children;
-        elem.setAttr(attrs);
+        elem.set_attr(attrs);
         return elem;
     },
 };
 
 ElementAttrs: (String, String) = {
-    <key:Text> "=" "\"" <value:Text> "\"" => {
+    <key:Text>"=\"" <value:Text> "\"" => {
+        println!("{:?}", key);
         (key, value)
     }
 }
 
 Text: String = {
-    r"[a-z0-9A-Z!?=,]+" => format!("{}", <>)
+    r"[a-z0-9A-Z!?,;]+" => format!("{}", <>)
 };

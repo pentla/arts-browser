@@ -81,12 +81,12 @@ fn html() {
     assert_eq!(elem5.children[2].text, "!");
 
     // id, classのパース
-    // let text6 = html::HtmlParser::new().parse("<div id=\"text\" class=\"hi\">text</div>");
-    // assert!(text6.is_ok());
-    // let elem6 = text6.unwrap();
-    // assert_eq!(elem6.name, ElementType::Div);
-    // assert_eq!(elem6.id, "text");
-    // assert_eq!(elem6.class, "hi");
-    // assert_eq!(elem6.children[0].name, ElementType::Text);
-    // assert_eq!(elem6.children[0].text, "text");
+    let text6 = html::HtmlParser::new().parse("<div id=\"text\" class=\"hi\">text</div>");
+    assert!(text6.is_ok());
+    let elem6 = text6.unwrap();
+    assert_eq!(elem6.name, ElementType::Div);
+    assert_eq!(elem6.id, "text");
+    assert_eq!(elem6.class, "hi");
+    assert_eq!(elem6.children[0].name, ElementType::Text);
+    assert_eq!(elem6.children[0].text, "text");
 }
