@@ -31,8 +31,6 @@ impl Element {
     }
 }
 
-pub struct ElementAttr {}
-
 #[derive(Debug, PartialEq)]
 pub enum ElementType {
     Html,

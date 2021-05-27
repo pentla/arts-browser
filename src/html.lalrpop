@@ -26,7 +26,6 @@ pub Tag: Box<Element> = {
 
 ElementAttrs: (String, String) = {
     <key:Text>"=\"" <value:Text> "\"" => {
-        println!("{:?}", key);
         (key, value)
     }
 }
