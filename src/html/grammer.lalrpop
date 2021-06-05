@@ -1,5 +1,5 @@
 use std::str;
-use crate::ast::{Element};
+use crate::html::ast::{Element};
 
 grammar;
 
