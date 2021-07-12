@@ -1,0 +1,4 @@
+
+text = { ASCII_ALPHANUMERIC+ }
+elementName = { ASCII_HEX_DIGIT+ }
+element = { "<" ~ elementName ~ ">" }
