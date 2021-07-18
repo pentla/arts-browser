@@ -92,4 +92,26 @@ fn test_parse() {
     // // spanのさらに下にtextがあるか
     assert_eq!(result4.children[0].children.len(), 1);
     assert_eq!(result4.children[0].children[0].name, ElementType::Text);
+
+    // 兄弟要素がある場合
+    //     let result5 = parse_nodes(
+    //         "
+    // <html>
+    //     <body>
+    //         <h1>Title</h1>
+    //         <div>
+    //             <p>hello</p>
+    //         </div>
+    //     </body>
+    // </html>
+    // ",
+    //     );
+    //     assert_eq!(result5.name, ElementType::Html);
+    //     assert_eq!(result5.children[0].name, ElementType::Body);
+    //     assert_eq!(result5.children[0].children[0].name, ElementType::H1);
+    //     assert_eq!(result5.children[0].children[1].name, ElementType::Div);
+    //     assert_eq!(
+    //         result5.children[0].children[1].children[0].name,
+    //         ElementType::P
+    //     );
 }

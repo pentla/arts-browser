@@ -1,4 +1,4 @@
-WHITESPACE = _{ " " }
+WHITESPACE = _{ " " | "\n" }
 text = { ASCII_ALPHANUMERIC* }
 elementName = { ASCII_ALPHANUMERIC+ }
 element = {
