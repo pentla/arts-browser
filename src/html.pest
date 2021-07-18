@@ -1,0 +1,21 @@
+WHITESPACE = _{ " " | "\t" | "\r" | "\n" }
+text = @{ (ASCII_ALPHANUMERIC | "!" | "?" | "~" | "^" | "=" | "'" | "\"" | ":" | ";" | "|" | "@")+ }
+
+elementName = @{ ASCII_ALPHANUMERIC+ }
+element = {
+    "<" ~ elementName ~ elementAttr* ~ ">"
+    ~ (element | text)*
+    ~ "</" ~ elementName ~ ">"
+}
+
+attrName = @{ ASCII_ALPHANUMERIC+ }
+attrValue = @{ (ASCII_ALPHANUMERIC | "!" | "?" | "~" | "^" | "=" | "'" | ":" | ";" | "|" | "@")+ }
+elementAttr = {
+    attrName ~ "=\"" ~ attrValue ~ "\""
+}
+
+html = _{
+    SOI
+    ~ element
+    ~ EOI
+}

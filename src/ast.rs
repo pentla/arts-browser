@@ -18,16 +18,12 @@ impl Element {
             class: String::from(""),
         }
     }
-    pub fn set_attr(self: &mut Self, attrs: Vec<(String, String)>) {
-        for attr in attrs {
-            let key = &*attr.0;
-            let value = attr.1;
-            match key {
-                "id" => self.id = value,
-                "class" => self.class = value,
-                _ => {}
-            };
-        }
+    pub fn set_attr(self: &mut Self, key: &str, value: &str) {
+        match key {
+            "id" => self.id = value.to_string(),
+            "class" => self.class = value.to_string(),
+            _ => {}
+        };
     }
 }
 
@@ -48,9 +44,10 @@ pub enum ElementType {
     Text,
     Error,
     Other,
+    Undefined,
 }
 
-fn element_type(name: &str) -> ElementType {
+pub fn element_type(name: &str) -> ElementType {
     match name {
         "html" => ElementType::Html,
         "body" => ElementType::Body,
@@ -66,6 +63,7 @@ fn element_type(name: &str) -> ElementType {
         "em" => ElementType::Em,
         "text" => ElementType::Text,
         "error" => ElementType::Error,
+        "" => ElementType::Undefined,
         _ => ElementType::Other,
     }
 }
