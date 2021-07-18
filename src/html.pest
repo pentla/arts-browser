@@ -1,4 +1,11 @@
-
+WHITESPACE = _{ " " }
 text = { ASCII_ALPHANUMERIC* }
 elementName = { ASCII_ALPHANUMERIC+ }
-element = { "<" ~ elementName ~ ">" ~ text ~ "</" ~ elementName ~ ">" }
+element = {
+    NEWLINE*
+    ~ "<" ~ elementName ~ ">"
+    ~ NEWLINE*
+    ~ (element | text)
+    ~ "</" ~ elementName ~ ">"
+    ~ NEWLINE*
+}

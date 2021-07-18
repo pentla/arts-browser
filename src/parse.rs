@@ -7,7 +7,7 @@ use crate::ast::{element_type, Element, ElementType};
 #[grammar = "html.pest"]
 pub struct HTMLParser;
 
-fn parse_elements(input: &str) -> Element {
+fn parse_nodes(input: &str) -> Element {
     let parser = HTMLParser::parse(Rule::element, input).unwrap();
     let mut element: Element = Element::new(String::from(""));
     for line in parser.into_iter() {
@@ -39,6 +39,10 @@ fn parse_element(rule: Pair<Rule>) -> Element {
                     element.name = element_type(item.as_str());
                 }
             }
+            Rule::element => {
+                let child_element = parse_element(item);
+                element.children.push(Box::new(child_element));
+            }
             Rule::text => {
                 let mut text_element = Element::new(String::from("text"));
                 text_element.text = item.to_string();
@@ -52,10 +56,40 @@ fn parse_element(rule: Pair<Rule>) -> Element {
 
 #[test]
 fn test_parse() {
-    let result1 = parse_elements("<div></div>");
+    let result1 = parse_nodes("<div></div>");
     assert_eq!(result1.name, ElementType::Div);
 
-    let result2 = parse_elements("<div>hello</div>");
+    let result2 = parse_nodes("<div>hello</div>");
     assert_eq!(result2.name, ElementType::Div);
     assert_eq!(result2.children[0].name, ElementType::Text);
+
+    let result2_1 = parse_nodes("<h1>hello</h1>");
+    assert_eq!(result2_1.name, ElementType::H1);
+    assert_eq!(result2_1.children[0].name, ElementType::Text);
+
+    // div → span → text
+    let result3 = parse_nodes("<div><span>text</span></div>");
+    assert_eq!(result3.name, ElementType::Div);
+    // 直下にspanがあるかどうか
+    assert_eq!(result3.children.len(), 1);
+    assert_eq!(result3.children[0].name, ElementType::Span);
+    // spanのさらに下にtextがあるか
+    assert_eq!(result3.children[0].children.len(), 1);
+    assert_eq!(result3.children[0].children[0].name, ElementType::Text);
+
+    // 改行を含む場合
+    let result4 = parse_nodes(
+        "
+<div>
+    <h1>Text</h1>
+</div>
+",
+    );
+    assert_eq!(result4.name, ElementType::Div);
+    // // 直下にspanがあるかどうか
+    assert_eq!(result4.children.len(), 1);
+    assert_eq!(result4.children[0].name, ElementType::H1);
+    // // spanのさらに下にtextがあるか
+    assert_eq!(result4.children[0].children.len(), 1);
+    assert_eq!(result4.children[0].children[0].name, ElementType::Text);
 }
