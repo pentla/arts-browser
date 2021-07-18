@@ -8,7 +8,7 @@ use crate::ast::{element_type, Element, ElementType};
 pub struct HTMLParser;
 
 fn parse_nodes(input: &str) -> Element {
-    let parser = HTMLParser::parse(Rule::element, input).unwrap();
+    let parser = HTMLParser::parse(Rule::html, input).unwrap();
     let mut element: Element = Element::new(String::from(""));
     for line in parser.into_iter() {
         match line.as_rule() {

@@ -1,11 +1,14 @@
 WHITESPACE = _{ " " | "\t" | "\r" | "\n" }
 text = @{ ASCII_ALPHANUMERIC+ }
-elementName = { ASCII_ALPHANUMERIC+ }
+elementName = @{ ASCII_ALPHANUMERIC+ }
 element = {
-    NEWLINE*
-    ~ "<" ~ elementName ~ ">"
-    ~ NEWLINE*
+    "<" ~ elementName ~ ">"
     ~ (element | text)?
     ~ "</" ~ elementName ~ ">"
-    ~ NEWLINE*
+}
+
+html = _{
+    SOI
+    ~ element
+    ~ EOI
 }
