@@ -1,5 +1,3 @@
-pub mod ast;
-
 // #[test]
 // fn html() {
 //     use crate::html::ast::ElementType;
