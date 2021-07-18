@@ -15,16 +15,7 @@ fn parse_nodes(input: &str) -> Element {
             Rule::element => {
                 element = parse_element(line);
             }
-            Rule::text => {
-                // println!("{:?}", line);
-                let inner_rule = line.into_inner().next().unwrap();
-                let mut text_element = Element::new(String::from("text"));
-                text_element.text = inner_rule.to_string();
-                element.children.push(Box::new(text_element));
-            }
-            _ => {
-                println!("other: {:?}", line);
-            }
+            _ => {}
         }
     }
     element
@@ -45,7 +36,7 @@ fn parse_element(rule: Pair<Rule>) -> Element {
             }
             Rule::text => {
                 let mut text_element = Element::new(String::from("text"));
-                text_element.text = item.to_string();
+                text_element.text = item.as_str().to_string();
                 element.children.push(Box::new(text_element));
             }
             _ => {}
@@ -114,4 +105,13 @@ fn test_parse() {
         result5.children[0].children[1].children[0].name,
         ElementType::P
     );
+
+    // テキストの後に要素が続く場合
+    let result6 = parse_nodes("<div>Hello<em>world</em>!</div>");
+    assert_eq!(result6.name, ElementType::Div);
+    assert_eq!(result6.children[0].name, ElementType::Text);
+    assert_eq!(result6.children[0].text, "Hello");
+    assert_eq!(result6.children[1].name, ElementType::Em);
+    assert_eq!(result6.children[2].name, ElementType::Text);
+    assert_eq!(result6.children[2].text, "!");
 }

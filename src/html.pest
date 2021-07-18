@@ -1,5 +1,5 @@
 WHITESPACE = _{ " " | "\t" | "\r" | "\n" }
-text = @{ ASCII_ALPHANUMERIC+ }
+text = @{ ASCII_ALPHANUMERIC+ | "!" | "?" | "~" | "^" }
 elementName = @{ ASCII_ALPHANUMERIC+ }
 element = {
     "<" ~ elementName ~ ">"
