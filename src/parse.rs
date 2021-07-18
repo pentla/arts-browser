@@ -41,6 +41,20 @@ fn parse_element(rule: Pair<Rule>) -> Element {
             }
             Rule::elementAttr => {
                 println!("{:?}", item);
+                let mut attr_name = "";
+                let mut attr_value = "";
+                for attribute in item.into_inner() {
+                    match attribute.as_rule() {
+                        Rule::attrName => {
+                            attr_name = attribute.as_str();
+                        }
+                        Rule::attrValue => {
+                            attr_value = attribute.as_str();
+                        }
+                        _ => {}
+                    }
+                }
+                element.set_attr(attr_name, attr_value);
             }
             _ => {}
         }
@@ -119,10 +133,10 @@ fn test_parse() {
     assert_eq!(result6.children[2].text, "!");
 
     // id, classのパース
-    let result7 = parse_nodes("<div id=\"text\" class=\"hi\">text</div>");
+    let result7 = parse_nodes(r#"<div id="text" class="hi">text</div>"#);
     assert_eq!(result7.name, ElementType::Div);
-    // assert_eq!(result7.id, "text");
-    // assert_eq!(result7.class, "hi");
-    // assert_eq!(result7.children[0].name, ElementType::Text);
-    // assert_eq!(result7.children[0].text, "text");
+    assert_eq!(result7.id, "text");
+    assert_eq!(result7.class, "hi");
+    assert_eq!(result7.children[0].name, ElementType::Text);
+    assert_eq!(result7.children[0].text, "text");
 }

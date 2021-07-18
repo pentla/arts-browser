@@ -18,16 +18,12 @@ impl Element {
             class: String::from(""),
         }
     }
-    pub fn set_attr(self: &mut Self, attrs: Vec<(String, String)>) {
-        for attr in attrs {
-            let key = &*attr.0;
-            let value = attr.1;
-            match key {
-                "id" => self.id = value,
-                "class" => self.class = value,
-                _ => {}
-            };
-        }
+    pub fn set_attr(self: &mut Self, key: &str, value: &str) {
+        match key {
+            "id" => self.id = value.to_string(),
+            "class" => self.class = value.to_string(),
+            _ => {}
+        };
     }
 }
 

@@ -3,15 +3,15 @@ text = @{ (ASCII_ALPHANUMERIC | "!" | "?" | "~" | "^" | "=" | "'" | "\"" | ":" |
 
 elementName = @{ ASCII_ALPHANUMERIC+ }
 element = {
-    "<" ~ elementName ~ elementAttr* ~  ">"
+    "<" ~ elementName ~ elementAttr* ~ ">"
     ~ (element | text)*
     ~ "</" ~ elementName ~ ">"
 }
 
 attrName = @{ ASCII_ALPHANUMERIC+ }
-attrValue = { text }
+attrValue = @{ (ASCII_ALPHANUMERIC | "!" | "?" | "~" | "^" | "=" | "'" | ":" | ";" | "|" | "@")+ }
 elementAttr = {
-    attrName ~ "=" ~ attrValue
+    attrName ~ "=\"" ~ attrValue ~ "\""
 }
 
 html = _{
