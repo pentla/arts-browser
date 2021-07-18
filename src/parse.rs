@@ -1,41 +1,61 @@
 use pest::iterators::Pair;
 use pest::Parser;
 
-use crate::ast::{Element, ElementType};
+use crate::ast::{element_type, Element, ElementType};
 
 #[derive(Parser)]
 #[grammar = "html.pest"]
 pub struct HTMLParser;
 
-fn parse_elements(input: &str) -> Vec<Element> {
+fn parse_elements(input: &str) -> Element {
     let parser = HTMLParser::parse(Rule::element, input).unwrap();
-    let mut elements: Vec<Element> = Vec::new();
+    let mut element: Element = Element::new(String::from(""));
     for line in parser.into_iter() {
         match line.as_rule() {
             Rule::element => {
+                element = parse_element(line);
+            }
+            Rule::text => {
+                // println!("{:?}", line);
                 let inner_rule = line.into_inner().next().unwrap();
-                let element = parse_element(inner_rule);
-                elements.push(element);
+                let mut text_element = Element::new(String::from("text"));
+                text_element.text = inner_rule.to_string();
+                element.children.push(Box::new(text_element));
             }
             _ => {
                 println!("other: {:?}", line);
             }
         }
     }
-    elements
+    element
 }
 
 fn parse_element(rule: Pair<Rule>) -> Element {
-    let element_name = rule.as_str();
-    Element::new(element_name.to_string())
+    let mut element = Element::new(String::from(""));
+    for item in rule.into_inner().into_iter() {
+        match item.as_rule() {
+            Rule::elementName => {
+                if element.name == ElementType::Undefined {
+                    element.name = element_type(item.as_str());
+                }
+            }
+            Rule::text => {
+                let mut text_element = Element::new(String::from("text"));
+                text_element.text = item.to_string();
+                element.children.push(Box::new(text_element));
+            }
+            _ => {}
+        }
+    }
+    element
 }
 
 #[test]
 fn test_parse() {
     let result1 = parse_elements("<div></div>");
-    assert_eq!(result1[0].name, ElementType::Div);
+    assert_eq!(result1.name, ElementType::Div);
 
-    // let result2 = parse_elements("<div>text</div>");
-    // assert_eq!(result2[0].name, ElementType::Div);
-    // assert_eq!(result2[0].children[0].name, ElementType::Text);
+    let result2 = parse_elements("<div>hello</div>");
+    assert_eq!(result2.name, ElementType::Div);
+    assert_eq!(result2.children[0].name, ElementType::Text);
 }

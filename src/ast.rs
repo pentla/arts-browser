@@ -48,9 +48,10 @@ pub enum ElementType {
     Text,
     Error,
     Other,
+    Undefined,
 }
 
-fn element_type(name: &str) -> ElementType {
+pub fn element_type(name: &str) -> ElementType {
     match name {
         "html" => ElementType::Html,
         "body" => ElementType::Body,
@@ -66,6 +67,7 @@ fn element_type(name: &str) -> ElementType {
         "em" => ElementType::Em,
         "text" => ElementType::Text,
         "error" => ElementType::Error,
+        "" => ElementType::Undefined,
         _ => ElementType::Other,
     }
 }
