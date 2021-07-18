@@ -3,7 +3,7 @@ text = @{ ASCII_ALPHANUMERIC+ }
 elementName = @{ ASCII_ALPHANUMERIC+ }
 element = {
     "<" ~ elementName ~ ">"
-    ~ (element | text)?
+    ~ (element | text)*
     ~ "</" ~ elementName ~ ">"
 }
 
