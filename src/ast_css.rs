@@ -1,7 +1,7 @@
 pub struct StyleSheet {
     pub blocks: Vec<Block>,
 }
-
+#[derive(Debug)]
 pub struct Block {
     pub selector: Vec<Selector>,
     pub declarations: Vec<Declaration>,
@@ -14,15 +14,25 @@ impl Block {
             declarations: vec![],
         }
     }
+    pub fn set_selector(self: &mut Self, input: &str) {
+        // todo
+    }
+}
+#[derive(Debug)]
+pub struct Selector {
+    element: Option<String>,
+    class: Option<String>,
+    id: Option<String>,
+    attribute: Option<String>,
 }
 
-pub struct Selector {}
-
+#[derive(Debug)]
 pub struct Declaration {
     pub property: CSSProperty,
     pub value: Value,
 }
 
+#[derive(Debug)]
 pub enum CSSProperty {
     Color,
     BackgroundColor,
@@ -30,12 +40,14 @@ pub enum CSSProperty {
     Padding,
 }
 
+#[derive(Debug)]
 pub enum Value {
     Keyword(String),
     Color,
     Length(f32, Unit),
 }
 
+#[derive(Debug)]
 pub enum Unit {
     Px,
 }
