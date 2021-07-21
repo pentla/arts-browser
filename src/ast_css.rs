@@ -3,19 +3,19 @@ pub struct StyleSheet {
 }
 #[derive(Debug)]
 pub struct Block {
-    pub selector: Vec<Selector>,
+    pub selectors: Vec<Selector>,
     pub declarations: Vec<Declaration>,
 }
 
 impl Block {
     pub fn new() -> Block {
         Block {
-            selector: vec![],
+            selectors: vec![],
             declarations: vec![],
         }
     }
-    pub fn set_selector(self: &mut Self, input: &str) {
-        // todo
+    pub fn set_selector(self: &mut Self, input: Selector) {
+        self.selectors.push(input);
     }
 }
 #[derive(Debug)]
@@ -24,6 +24,17 @@ pub struct Selector {
     class: Option<String>,
     id: Option<String>,
     attribute: Option<String>,
+}
+
+impl Selector {
+    pub fn new() -> Selector {
+        Selector {
+            element: None,
+            class: None,
+            id: None,
+            attribute: None,
+        }
+    }
 }
 
 #[derive(Debug)]

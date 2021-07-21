@@ -1,7 +1,7 @@
 use pest::iterators::Pair;
 use pest::Parser;
 
-use crate::ast_css::Block;
+use crate::ast_css::{Block, Selector};
 
 #[derive(Parser)]
 #[grammar = "css.pest"]
@@ -23,8 +23,23 @@ fn parse_css(input: &str) -> Block {
 
 fn parse_style_block(rule: Pair<Rule>) -> Block {
     let mut block = Block::new();
-    block.set_selector(rule.as_str());
+    // let selector = parse_selector(rule);
+    for line in rule.into_inner().into_iter() {
+        match line.as_rule() {
+            Rule::selector => {
+                let selector = parse_selector(line);
+                block.set_selector(selector);
+            }
+            _ => {}
+        }
+    }
     block
+}
+
+fn parse_selector(rule: Pair<Rule>) -> Selector {
+    let mut selector = Selector::new();
+    println!("selector {:?}", rule);
+    selector
 }
 
 #[test]
