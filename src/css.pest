@@ -1,0 +1,4 @@
+WHITESPACE = _{ " " | "\t" | "\r" | "\n" }
+selector = @{ ASCII_ALPHANUMERIC+ }
+
+block = { selector ~ "{" ~ "}" }

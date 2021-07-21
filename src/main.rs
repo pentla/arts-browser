@@ -2,8 +2,10 @@ extern crate pest;
 #[macro_use]
 extern crate pest_derive;
 
-pub mod ast;
-pub mod parse;
+pub mod ast_css;
+pub mod ast_html;
+pub mod parse_css;
+pub mod parse_html;
 
 use pest::Parser;
 
