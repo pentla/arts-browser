@@ -2,7 +2,7 @@ use pest::iterators::Pair;
 use pest::Parser;
 
 use crate::{
-    ast_css::{Block, CSSProperty, Declaration, Selector},
+    ast_css::{Block, Declaration, Property, Selector, Unit, Value},
     ast_html::ElementType,
 };
 
@@ -70,8 +70,7 @@ fn test_css_parse() {
         result2.selectors.get(0).unwrap().element,
         Some(ElementType::Div)
     );
-    assert_eq!(
-        result2.declarations.get(0).unwrap().property,
-        CSSProperty::Padding
-    );
+    let dec2 = result2.declarations.get(0).unwrap();
+    assert_eq!(dec2.property, Property::Padding);
+    assert_eq!(dec2.value, Value::Length(2.0, Unit::Px));
 }

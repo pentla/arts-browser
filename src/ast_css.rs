@@ -58,7 +58,7 @@ impl Selector {
 
 #[derive(Debug)]
 pub struct Declaration {
-    pub property: CSSProperty,
+    pub property: Property,
     pub value: Value,
 }
 
@@ -67,7 +67,7 @@ impl Declaration {
         let property = property_type(prop);
         let mut value = Value::Undefined;
         match property {
-            CSSProperty::Padding => {
+            Property::Padding => {
                 if !val.contains("px") {
                     return Err(anyhow::anyhow!("padding not px;"));
                 }
@@ -82,7 +82,7 @@ impl Declaration {
 }
 
 #[derive(Debug, PartialEq)]
-pub enum CSSProperty {
+pub enum Property {
     Color,
     BackgroundColor,
     Margin,
@@ -90,17 +90,17 @@ pub enum CSSProperty {
     Undefined,
 }
 
-fn property_type(input: &str) -> CSSProperty {
+fn property_type(input: &str) -> Property {
     match input {
-        "padding" => CSSProperty::Padding,
-        "margin" => CSSProperty::Margin,
-        "color" => CSSProperty::Color,
-        "background-color" => CSSProperty::BackgroundColor,
-        _ => CSSProperty::Undefined,
+        "padding" => Property::Padding,
+        "margin" => Property::Margin,
+        "color" => Property::Color,
+        "background-color" => Property::BackgroundColor,
+        _ => Property::Undefined,
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum Value {
     Keyword(String),
     Color,
@@ -108,7 +108,7 @@ pub enum Value {
     Undefined,
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum Unit {
     Px,
 }
