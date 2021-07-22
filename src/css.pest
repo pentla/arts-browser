@@ -1,4 +1,7 @@
 WHITESPACE = _{ " " | "\t" | "\r" | "\n" }
 selector = @{ ASCII_ALPHANUMERIC+ }
+property = @{ ASCII_ALPHANUMERIC+ }
+value = @{ ASCII_ALPHANUMERIC+ }
 
-block = { selector ~ "{" ~ "}" }
+block = { selector+ ~ "{" ~ declaration* ~ "}" }
+declaration = { property ~ ":" ~ value ~ ";" }
