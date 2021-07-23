@@ -33,26 +33,22 @@ pub struct Selector {
 }
 
 impl Selector {
-    pub fn new(input: &str) -> Selector {
-        let mut selector = Selector {
+    pub fn new() -> Selector {
+        Selector {
             element: None,
             class: None,
             id: None,
             attribute: None,
-        };
-        if !input.contains(".") {
-            let first_char = input.chars().next().unwrap();
-            match first_char {
-                '.' => {
-                    selector.class = Some(input.replace(".", "").to_string());
-                }
-                '#' => {
-                    selector.id = Some(input.replace("#", "").to_string());
-                }
-                _ => selector.element = Some(element_type(input)),
-            }
         }
-        selector
+    }
+    pub fn set_class(self: &mut Self, input: &str) {
+        self.class = Some(input.to_string());
+    }
+    pub fn set_id(self: &mut Self, input: &str) {
+        self.id = Some(input.to_string());
+    }
+    pub fn set_element(self: &mut Self, input: &str) {
+        self.element = Some(element_type(input));
     }
 }
 
@@ -62,18 +58,38 @@ pub struct Declaration {
     pub value: Value,
 }
 
+fn get_px(input: &str) -> Result<f32> {
+    if !input.contains("px") {
+        return Err(anyhow::anyhow!("padding not px;"));
+    }
+    let remove_px = input.replace("px", "");
+    let float: f32 = remove_px.parse().unwrap();
+    Ok(float)
+}
+
 impl Declaration {
     pub fn new(prop: &str, val: &str) -> Result<Declaration> {
         let property = property_type(prop);
         let mut value = Value::Undefined;
         match property {
             Property::Padding => {
-                if !val.contains("px") {
-                    return Err(anyhow::anyhow!("padding not px;"));
-                }
-                let remove_px = val.replace("px", "");
-                let float: f32 = remove_px.parse().unwrap();
-                value = Value::Length(float, Unit::Px);
+                let px = get_px(val).unwrap();
+                value = Value::Length(px, Unit::Px);
+            }
+            Property::Margin => {
+                let px = get_px(val).unwrap();
+                value = Value::Length(px, Unit::Px);
+            }
+            Property::Display => {
+                value = Value::Keyword(val.to_string());
+            }
+            Property::Width => {
+                let px = get_px(val).unwrap();
+                value = Value::Length(px, Unit::Px);
+            }
+            Property::Height => {
+                let px = get_px(val).unwrap();
+                value = Value::Length(px, Unit::Px);
             }
             _ => {}
         }
@@ -87,6 +103,9 @@ pub enum Property {
     BackgroundColor,
     Margin,
     Padding,
+    Width,
+    Height,
+    Display,
     Undefined,
 }
 
@@ -96,6 +115,9 @@ fn property_type(input: &str) -> Property {
         "margin" => Property::Margin,
         "color" => Property::Color,
         "background-color" => Property::BackgroundColor,
+        "width" => Property::Width,
+        "height" => Property::Height,
+        "display" => Property::Display,
         _ => Property::Undefined,
     }
 }
@@ -113,9 +135,9 @@ pub enum Unit {
     Px,
 }
 
-pub struct Color {
-    r: u8,
-    g: u8,
-    b: u8,
-    // a: u8,
-}
+// pub struct Color {
+//     r: u8,
+//     g: u8,
+//     b: u8,
+//     a: u8,
+// }
