@@ -9,7 +9,7 @@ selector = ${ (class | id | element)+ }
 property = @{ (ASCII_ALPHANUMERIC | "-")+ }
 value = @{ (ASCII_ALPHANUMERIC | "-" | "#")+ }
 
-block = { selector+ ~ "{" ~ declaration* ~ "}" }
+block = { (selector ~ ","?)+ ~ "{" ~ declaration* ~ "}" }
 declaration = { property ~ ":" ~ value ~ ";" }
 css = _{
     SOI
