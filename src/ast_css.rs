@@ -4,6 +4,15 @@ use anyhow::Result;
 pub struct StyleSheet {
     pub blocks: Vec<Block>,
 }
+impl StyleSheet {
+    pub fn new() -> StyleSheet {
+        StyleSheet { blocks: vec![] }
+    }
+    pub fn append_block(self: &mut Self, block: Block) {
+        self.blocks.push(block);
+    }
+}
+
 #[derive(Debug)]
 pub struct Block {
     pub selectors: Vec<Selector>,
@@ -73,12 +82,46 @@ impl Declaration {
         let mut value = Value::Undefined;
         match property {
             Property::Padding => {
-                let px = get_px(val).unwrap();
-                value = Value::Length(px, Unit::Px);
+                let px = get_px(val);
+                match px {
+                    Ok(px) => value = Value::Length(px, Unit::Px),
+                    Err(err) => value = Value::Keyword(val.to_string()),
+                }
             }
             Property::Margin => {
-                let px = get_px(val).unwrap();
-                value = Value::Length(px, Unit::Px);
+                let px = get_px(val);
+                match px {
+                    Ok(px) => value = Value::Length(px, Unit::Px),
+                    Err(err) => value = Value::Keyword(val.to_string()),
+                }
+            }
+            Property::MarginTop => {
+                let px = get_px(val);
+                match px {
+                    Ok(px) => value = Value::Length(px, Unit::Px),
+                    Err(err) => value = Value::Keyword(val.to_string()),
+                }
+            }
+            Property::MarginLeft => {
+                let px = get_px(val);
+                match px {
+                    Ok(px) => value = Value::Length(px, Unit::Px),
+                    Err(err) => value = Value::Keyword(val.to_string()),
+                }
+            }
+            Property::MarginRight => {
+                let px = get_px(val);
+                match px {
+                    Ok(px) => value = Value::Length(px, Unit::Px),
+                    Err(err) => value = Value::Keyword(val.to_string()),
+                }
+            }
+            Property::MarginBottom => {
+                let px = get_px(val);
+                match px {
+                    Ok(px) => value = Value::Length(px, Unit::Px),
+                    Err(err) => value = Value::Keyword(val.to_string()),
+                }
             }
             Property::Display => {
                 value = Value::Keyword(val.to_string());
@@ -91,6 +134,18 @@ impl Declaration {
                 let px = get_px(val).unwrap();
                 value = Value::Length(px, Unit::Px);
             }
+            Property::FontSize => {
+                let px = get_px(val).unwrap();
+                value = Value::Length(px, Unit::Px);
+            }
+            Property::BackgroundColor => {
+                // FIX: colorに修正
+                value = Value::Keyword(val.to_string());
+            }
+            Property::Color => {
+                // FIX: colorに修正
+                value = Value::Keyword(val.to_string());
+            }
             _ => {}
         }
         Ok(Declaration { property, value })
@@ -102,10 +157,15 @@ pub enum Property {
     Color,
     BackgroundColor,
     Margin,
+    MarginTop,
+    MarginLeft,
+    MarginRight,
+    MarginBottom,
     Padding,
     Width,
     Height,
     Display,
+    FontSize,
     Undefined,
 }
 
@@ -113,10 +173,15 @@ fn property_type(input: &str) -> Property {
     match input {
         "padding" => Property::Padding,
         "margin" => Property::Margin,
+        "margin-top" => Property::MarginTop,
+        "margin-left" => Property::MarginLeft,
+        "margin-right" => Property::MarginRight,
+        "margin-bottom" => Property::MarginBottom,
         "color" => Property::Color,
         "background-color" => Property::BackgroundColor,
         "width" => Property::Width,
         "height" => Property::Height,
+        "font-size" => Property::FontSize,
         "display" => Property::Display,
         _ => Property::Undefined,
     }

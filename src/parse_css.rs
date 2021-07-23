@@ -4,13 +4,28 @@ use pest::iterators::Pair;
 use pest::Parser;
 
 use crate::{
-    ast_css::{Block, Declaration, Property, Selector, Unit, Value},
-    ast_html::{Element, ElementType},
+    ast_css::{Block, Declaration, Property, Selector, StyleSheet, Unit, Value},
+    ast_html::{element_type, Element, ElementType},
 };
 
 #[derive(Parser)]
 #[grammar = "css.pest"]
 pub struct CSSParser;
+
+fn parse_css(input: &str) -> StyleSheet {
+    let parser = CSSParser::parse(Rule::css, input).unwrap();
+    let mut css = StyleSheet::new();
+    for line in parser.into_iter() {
+        match line.as_rule() {
+            Rule::block => {
+                let block = parse_block(line.as_str());
+                css.append_block(block);
+            }
+            _ => {}
+        }
+    }
+    css
+}
 
 fn parse_block(input: &str) -> Block {
     let parser = CSSParser::parse(Rule::block, input).unwrap();
@@ -49,7 +64,6 @@ fn parse_style_block(rule: Pair<Rule>) -> Block {
                 let mut property: &str = "";
                 let mut value: &str = "";
                 for line_declaration in line.into_inner().into_iter() {
-                    println!("{:?}", line_declaration);
                     match line_declaration.as_rule() {
                         Rule::property => {
                             property = line_declaration.as_str();
@@ -117,6 +131,87 @@ fn test_css_parse() {
 }
 
 #[test]
+fn test_css_parse_2() {
+    // 改行がある
+    let result1 = parse_css(
+        "
+h1 {
+    font-size: 50px;
+}
+",
+    );
+    let block1 = result1.blocks.get(0).unwrap();
+    let selector1 = block1.selectors.get(0).unwrap();
+    assert_eq!(selector1.element, Some(ElementType::H1));
+    let dec1 = block1.declarations.get(0).unwrap();
+    assert_eq!(dec1.property, Property::FontSize);
+    assert_eq!(dec1.value, Value::Length(50.0, Unit::Px));
+
+    // 複数行の宣言がある
+    let result2 = parse_css(
+        "
+span {
+    display: inline-block;
+    background-color: black;
+}
+",
+    );
+    let block2 = result2.blocks.get(0).unwrap();
+    let selector2 = block2.selectors.get(0).unwrap();
+    assert_eq!(selector2.element, Some(ElementType::Span));
+    let dec2_1 = block2.declarations.get(0).unwrap();
+    assert_eq!(dec2_1.property, Property::Display);
+    assert_eq!(dec2_1.value, Value::Keyword("inline-block".to_string()));
+    let dec2_2 = block2.declarations.get(1).unwrap();
+    assert_eq!(dec2_2.property, Property::BackgroundColor);
+    assert_eq!(dec2_2.value, Value::Keyword("black".to_string()));
+}
+
+#[test]
+fn test_css_parse_3() {
+    // https://limpet.net/mbrubeck/2014/08/13/toy-layout-engine-3-css.html
+    // のパターンに対応する
+    let result1 = parse_css(
+        "
+h1, h2, h3 { margin: auto; color: #cc0000; }
+div.note { margin-bottom: 20px; padding: 10px; }
+#answer { display: none; }
+",
+    );
+    let block1 = result1.blocks.get(0).unwrap();
+    let sel1_1 = block1.selectors.get(0).unwrap();
+    assert_eq!(sel1_1.element, Some(ElementType::H1));
+    let sel1_2 = block1.selectors.get(1).unwrap();
+    assert_eq!(sel1_2.element, Some(ElementType::H2));
+    let sel1_3 = block1.selectors.get(2).unwrap();
+    assert_eq!(sel1_3.element, Some(ElementType::H3));
+    let dec1_1 = block1.declarations.get(0).unwrap();
+    assert_eq!(dec1_1.property, Property::Margin);
+    assert_eq!(dec1_1.value, Value::Keyword("auto".to_string()));
+    let dec1_2 = block1.declarations.get(1).unwrap();
+    assert_eq!(dec1_2.property, Property::Color);
+    assert_eq!(dec1_2.value, Value::Keyword("#cc0000".to_string()));
+
+    let block2 = result1.blocks.get(1).unwrap();
+    let sel2 = block2.selectors.get(0).unwrap();
+    assert_eq!(sel2.element, Some(ElementType::Div));
+    assert_eq!(sel2.class, Some("note".to_string()));
+    let dec2_1 = block2.declarations.get(0).unwrap();
+    assert_eq!(dec2_1.property, Property::MarginBottom);
+    assert_eq!(dec2_1.value, Value::Length(20.0, Unit::Px));
+    let dec2_2 = block2.declarations.get(1).unwrap();
+    assert_eq!(dec2_2.property, Property::Padding);
+    assert_eq!(dec2_2.value, Value::Length(10.0, Unit::Px));
+
+    let block3 = result1.blocks.get(2).unwrap();
+    let sel3 = block3.selectors.get(0).unwrap();
+    assert_eq!(sel3.id, Some("answer".to_string()));
+    let dec3 = block3.declarations.get(0).unwrap();
+    assert_eq!(dec3.property, Property::Display);
+    assert_eq!(dec3.value, Value::Keyword("none".to_string()));
+}
+
+#[test]
 fn test_pest_parser() {
     let result1 = CSSParser::parse(Rule::selector, "a").unwrap();
     for rule in result1 {
@@ -178,12 +273,23 @@ fn test_pest_parser() {
 #[test]
 fn test_pest_parser_declaration() {
     let result1 = CSSParser::parse(Rule::declaration, "padding: 2px;").unwrap();
-    println!("{:?}", result1);
     for rule_inner in result1.into_iter() {
         let mut dec = rule_inner.into_inner().into_iter();
         let rule_1 = dec.next().unwrap();
         assert_eq!(rule_1.as_str(), "padding");
         let rule_2 = dec.next().unwrap();
         assert_eq!(rule_2.as_str(), "2px");
+    }
+}
+
+#[test]
+fn test_pest_parser_selector() {
+    let result1 = CSSParser::parse(Rule::block, "a, div {}").unwrap();
+    for line_inner in result1.into_iter() {
+        let mut inner = line_inner.into_inner().into_iter();
+        let elem1 = inner.next().unwrap();
+        assert_eq!(elem1.as_str(), "a");
+        let elem2 = inner.next().unwrap();
+        assert_eq!(elem2.as_str(), "div");
     }
 }

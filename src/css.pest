@@ -6,8 +6,13 @@ id = { "#" ~ selectorRule }
 element = @{ selectorRule }
 
 selector = ${ (class | id | element)+ }
-property = @{ ASCII_ALPHANUMERIC+ }
-value = @{ ASCII_ALPHANUMERIC+ }
+property = @{ (ASCII_ALPHANUMERIC | "-")+ }
+value = @{ (ASCII_ALPHANUMERIC | "-" | "#")+ }
 
-block = { selector+ ~ "{" ~ declaration* ~ "}" }
+block = { (selector ~ ","?)+ ~ "{" ~ declaration* ~ "}" }
 declaration = { property ~ ":" ~ value ~ ";" }
+css = _{
+    SOI
+    ~ block*
+    ~ EOI
+}
