@@ -4,6 +4,15 @@ use anyhow::Result;
 pub struct StyleSheet {
     pub blocks: Vec<Block>,
 }
+impl StyleSheet {
+    pub fn new() -> StyleSheet {
+        StyleSheet { blocks: vec![] }
+    }
+    pub fn append_block(self: &mut Self, block: Block) {
+        self.blocks.push(block);
+    }
+}
+
 #[derive(Debug)]
 pub struct Block {
     pub selectors: Vec<Selector>,
@@ -73,8 +82,11 @@ impl Declaration {
         let mut value = Value::Undefined;
         match property {
             Property::Padding => {
-                let px = get_px(val).unwrap();
-                value = Value::Length(px, Unit::Px);
+                let px = get_px(val);
+                match px {
+                    Ok(px) => value = Value::Length(px, Unit::Px),
+                    Err(err) => value = Value::Keyword(val.to_string()),
+                }
             }
             Property::Margin => {
                 let px = get_px(val).unwrap();
@@ -91,6 +103,14 @@ impl Declaration {
                 let px = get_px(val).unwrap();
                 value = Value::Length(px, Unit::Px);
             }
+            Property::FontSize => {
+                let px = get_px(val).unwrap();
+                value = Value::Length(px, Unit::Px);
+            }
+            Property::BackgroundColor => {
+                // FIX: colorに修正
+                value = Value::Keyword(val.to_string());
+            }
             _ => {}
         }
         Ok(Declaration { property, value })
@@ -106,6 +126,7 @@ pub enum Property {
     Width,
     Height,
     Display,
+    FontSize,
     Undefined,
 }
 
@@ -117,6 +138,7 @@ fn property_type(input: &str) -> Property {
         "background-color" => Property::BackgroundColor,
         "width" => Property::Width,
         "height" => Property::Height,
+        "font-size" => Property::FontSize,
         "display" => Property::Display,
         _ => Property::Undefined,
     }

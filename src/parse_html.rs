@@ -40,7 +40,6 @@ fn parse_element(rule: Pair<Rule>) -> Element {
                 element.children.push(Box::new(text_element));
             }
             Rule::elementAttr => {
-                println!("{:?}", item);
                 let mut attr_name = "";
                 let mut attr_value = "";
                 for attribute in item.into_inner() {
