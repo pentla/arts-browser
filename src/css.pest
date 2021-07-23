@@ -1,0 +1,13 @@
+WHITESPACE = _{ " " | "\t" | "\r" | "\n" }
+
+selectorRule = { (ASCII_ALPHANUMERIC | "_")+ }
+class = { "." ~ selectorRule }
+id = { "#" ~ selectorRule }
+element = @{ selectorRule }
+
+selector = ${ (class | id | element)+ }
+property = @{ ASCII_ALPHANUMERIC+ }
+value = @{ ASCII_ALPHANUMERIC+ }
+
+block = { selector+ ~ "{" ~ declaration* ~ "}" }
+declaration = { property ~ ":" ~ value ~ ";" }
