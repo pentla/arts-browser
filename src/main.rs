@@ -4,6 +4,7 @@ extern crate pest_derive;
 
 mod css;
 mod html;
+mod style;
 
 use pest::Parser;
 

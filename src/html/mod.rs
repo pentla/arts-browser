@@ -1,2 +1,2 @@
-pub mod ast_html;
-pub mod parse_html;
+pub mod ast;
+pub mod parse;

@@ -1,4 +1,4 @@
-use crate::html::ast_html::{element_type, ElementType};
+use crate::html::ast::{element_type, ElementType};
 use anyhow::Result;
 
 pub struct StyleSheet {

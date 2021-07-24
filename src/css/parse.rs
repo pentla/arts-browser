@@ -4,8 +4,8 @@ use pest::iterators::Pair;
 use pest::Parser;
 
 use crate::{
-    css::ast_css::{Block, Declaration, Property, Selector, StyleSheet, Unit, Value},
-    html::ast_html::{element_type, Element, ElementType},
+    css::ast::{Block, Declaration, Property, Selector, StyleSheet, Unit, Value},
+    html::ast::{element_type, Element, ElementType},
 };
 
 #[derive(Parser)]

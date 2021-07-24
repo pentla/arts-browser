@@ -1,7 +1,7 @@
 use pest::iterators::Pair;
 use pest::Parser;
 
-use crate::html::ast_html::{element_type, Element, ElementType};
+use crate::html::ast::{element_type, Element, ElementType};
 
 #[derive(Parser)]
 #[grammar = "html/html.pest"]
