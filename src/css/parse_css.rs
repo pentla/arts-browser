@@ -4,12 +4,12 @@ use pest::iterators::Pair;
 use pest::Parser;
 
 use crate::{
-    ast_css::{Block, Declaration, Property, Selector, StyleSheet, Unit, Value},
-    ast_html::{element_type, Element, ElementType},
+    css::ast_css::{Block, Declaration, Property, Selector, StyleSheet, Unit, Value},
+    html::ast_html::{element_type, Element, ElementType},
 };
 
 #[derive(Parser)]
-#[grammar = "css.pest"]
+#[grammar = "css/css.pest"]
 pub struct CSSParser;
 
 fn parse_css(input: &str) -> StyleSheet {
