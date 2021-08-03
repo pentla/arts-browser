@@ -95,8 +95,8 @@ fn test_css_parse() {
     // classがparseできる
     let result1_1 = parse_block(".sample {}");
     assert_eq!(
-        result1_1.selectors.get(0).unwrap().class,
-        Some(String::from("sample"))
+        *result1_1.selectors.get(0).unwrap().class.get(0).unwrap(),
+        String::from("sample")
     );
 
     // // selectorとdeclarationがparseできる
@@ -113,7 +113,10 @@ fn test_css_parse() {
     let result3 = parse_block("a.sample_class { margin: 2px;}");
     let selector3 = result3.selectors.get(0).unwrap();
     assert_eq!(selector3.element, Some(ElementType::A));
-    assert_eq!(selector3.class, Some(String::from("sample_class")));
+    assert_eq!(
+        *selector3.class.get(0).unwrap(),
+        String::from("sample_class")
+    );
     let dec3 = result3.declarations.get(0).unwrap();
     assert_eq!(dec3.property, Property::Margin);
     assert_eq!(dec3.value, Value::Length(2.0, Unit::Px));
@@ -195,7 +198,7 @@ div.note { margin-bottom: 20px; padding: 10px; }
     let block2 = result1.blocks.get(1).unwrap();
     let sel2 = block2.selectors.get(0).unwrap();
     assert_eq!(sel2.element, Some(ElementType::Div));
-    assert_eq!(sel2.class, Some("note".to_string()));
+    assert_eq!(*sel2.class.get(0).unwrap(), "note".to_string());
     let dec2_1 = block2.declarations.get(0).unwrap();
     assert_eq!(dec2_1.property, Property::MarginBottom);
     assert_eq!(dec2_1.value, Value::Length(20.0, Unit::Px));

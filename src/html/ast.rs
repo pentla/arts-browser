@@ -1,4 +1,4 @@
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Element {
     pub name: ElementType,
     pub text: String,
@@ -27,7 +27,7 @@ impl Element {
     }
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone, Copy)]
 pub enum ElementType {
     Html,
     Body,
