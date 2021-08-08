@@ -1,3 +1,4 @@
+use crate::css::property_name::{property_to_string, property_type};
 use crate::html::ast::{element_type, ElementType};
 use anyhow::Result;
 
@@ -36,22 +37,30 @@ impl Block {
 #[derive(Debug)]
 pub struct Selector {
     pub element: Option<ElementType>,
-    pub class: Option<String>,
+    pub class: Vec<String>,
     pub id: Option<String>,
     pub attribute: Option<String>,
 }
+
+pub type Specificity = (usize, usize, usize);
 
 impl Selector {
     pub fn new() -> Selector {
         Selector {
             element: None,
-            class: None,
+            class: vec![],
             id: None,
             attribute: None,
         }
     }
+    pub fn specificity(&self) -> Specificity {
+        let a = self.id.iter().count();
+        let b = self.class.len();
+        let c = self.element.iter().count();
+        (a, b, c)
+    }
     pub fn set_class(self: &mut Self, input: &str) {
-        self.class = Some(input.to_string());
+        self.class.push(input.to_string());
     }
     pub fn set_id(self: &mut Self, input: &str) {
         self.id = Some(input.to_string());
@@ -152,7 +161,7 @@ impl Declaration {
     }
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Eq, Copy, Clone)]
 pub enum Property {
     Color,
     BackgroundColor,
@@ -169,25 +178,13 @@ pub enum Property {
     Undefined,
 }
 
-fn property_type(input: &str) -> Property {
-    match input {
-        "padding" => Property::Padding,
-        "margin" => Property::Margin,
-        "margin-top" => Property::MarginTop,
-        "margin-left" => Property::MarginLeft,
-        "margin-right" => Property::MarginRight,
-        "margin-bottom" => Property::MarginBottom,
-        "color" => Property::Color,
-        "background-color" => Property::BackgroundColor,
-        "width" => Property::Width,
-        "height" => Property::Height,
-        "font-size" => Property::FontSize,
-        "display" => Property::Display,
-        _ => Property::Undefined,
+impl Property {
+    pub fn to_string(self: &Self) -> String {
+        property_to_string(*self)
     }
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum Value {
     Keyword(String),
     Color,
@@ -195,7 +192,7 @@ pub enum Value {
     Undefined,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum Unit {
     Px,
 }

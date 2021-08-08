@@ -1,33 +1,40 @@
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Element {
-    pub name: ElementType,
-    pub text: String,
+    pub element_data: ElementData,
     pub children: Vec<Box<Element>>,
-    pub id: String,
-    pub class: String,
 }
 
 impl Element {
     pub fn new(name: String) -> Element {
         let elm_name = element_type(&*name);
         Element {
-            name: elm_name,
+            element_data: ElementData {
+                name: elm_name,
+                text: String::from(""),
+                id: String::from(""),
+                class: String::from(""),
+            },
             children: vec![],
-            text: String::from(""),
-            id: String::from(""),
-            class: String::from(""),
         }
     }
     pub fn set_attr(self: &mut Self, key: &str, value: &str) {
         match key {
-            "id" => self.id = value.to_string(),
-            "class" => self.class = value.to_string(),
+            "id" => self.element_data.id = value.to_string(),
+            "class" => self.element_data.class = value.to_string(),
             _ => {}
         };
     }
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone)]
+pub struct ElementData {
+    pub name: ElementType,
+    pub text: String,
+    pub id: String,
+    pub class: String,
+}
+
+#[derive(Debug, PartialEq, Clone, Copy)]
 pub enum ElementType {
     Html,
     Body,
