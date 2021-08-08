@@ -26,8 +26,8 @@ fn parse_element(rule: Pair<Rule>) -> Element {
     for item in rule.into_inner().into_iter() {
         match item.as_rule() {
             Rule::elementName => {
-                if element.name == ElementType::Undefined {
-                    element.name = element_type(item.as_str());
+                if element.element_data.name == ElementType::Undefined {
+                    element.element_data.name = element_type(item.as_str());
                 }
             }
             Rule::element => {
@@ -36,7 +36,7 @@ fn parse_element(rule: Pair<Rule>) -> Element {
             }
             Rule::text => {
                 let mut text_element = Element::new(String::from("text"));
-                text_element.text = item.as_str().to_string();
+                text_element.element_data.text = item.as_str().to_string();
                 element.children.push(Box::new(text_element));
             }
             Rule::elementAttr => {
@@ -64,25 +64,28 @@ fn parse_element(rule: Pair<Rule>) -> Element {
 #[test]
 fn test_parse() {
     let result1 = parse_nodes("<div></div>");
-    assert_eq!(result1.name, ElementType::Div);
+    assert_eq!(result1.element_data.name, ElementType::Div);
 
     let result2 = parse_nodes("<div>hello</div>");
-    assert_eq!(result2.name, ElementType::Div);
-    assert_eq!(result2.children[0].name, ElementType::Text);
+    assert_eq!(result2.element_data.name, ElementType::Div);
+    assert_eq!(result2.children[0].element_data.name, ElementType::Text);
 
     let result2_1 = parse_nodes("<h1>hello</h1>");
-    assert_eq!(result2_1.name, ElementType::H1);
-    assert_eq!(result2_1.children[0].name, ElementType::Text);
+    assert_eq!(result2_1.element_data.name, ElementType::H1);
+    assert_eq!(result2_1.children[0].element_data.name, ElementType::Text);
 
     // div → span → text
     let result3 = parse_nodes("<div><span>text</span></div>");
-    assert_eq!(result3.name, ElementType::Div);
+    assert_eq!(result3.element_data.name, ElementType::Div);
     // 直下にspanがあるかどうか
     assert_eq!(result3.children.len(), 1);
-    assert_eq!(result3.children[0].name, ElementType::Span);
+    assert_eq!(result3.children[0].element_data.name, ElementType::Span);
     // spanのさらに下にtextがあるか
     assert_eq!(result3.children[0].children.len(), 1);
-    assert_eq!(result3.children[0].children[0].name, ElementType::Text);
+    assert_eq!(
+        result3.children[0].children[0].element_data.name,
+        ElementType::Text
+    );
 
     // 改行を含む場合
     let result4 = parse_nodes(
@@ -92,13 +95,16 @@ fn test_parse() {
 </div>
 ",
     );
-    assert_eq!(result4.name, ElementType::Div);
+    assert_eq!(result4.element_data.name, ElementType::Div);
     // // 直下にspanがあるかどうか
     assert_eq!(result4.children.len(), 1);
-    assert_eq!(result4.children[0].name, ElementType::H1);
+    assert_eq!(result4.children[0].element_data.name, ElementType::H1);
     // // spanのさらに下にtextがあるか
     assert_eq!(result4.children[0].children.len(), 1);
-    assert_eq!(result4.children[0].children[0].name, ElementType::Text);
+    assert_eq!(
+        result4.children[0].children[0].element_data.name,
+        ElementType::Text
+    );
 
     // 兄弟要素がある場合
     let result5 = parse_nodes(
@@ -113,31 +119,39 @@ fn test_parse() {
     </html>
     ",
     );
-    assert_eq!(result5.name, ElementType::Html);
-    assert_eq!(result5.children[0].name, ElementType::Body);
-    assert_eq!(result5.children[0].children[0].name, ElementType::H1);
-    assert_eq!(result5.children[0].children[1].name, ElementType::Div);
+    assert_eq!(result5.element_data.name, ElementType::Html);
+    assert_eq!(result5.children[0].element_data.name, ElementType::Body);
     assert_eq!(
-        result5.children[0].children[1].children[0].name,
+        result5.children[0].children[0].element_data.name,
+        ElementType::H1
+    );
+    assert_eq!(
+        result5.children[0].children[1].element_data.name,
+        ElementType::Div
+    );
+    assert_eq!(
+        result5.children[0].children[1].children[0]
+            .element_data
+            .name,
         ElementType::P
     );
 
     // テキストの後に要素が続く場合
     let result6 = parse_nodes("<div>Hello<em>world</em>!</div>");
-    assert_eq!(result6.name, ElementType::Div);
-    assert_eq!(result6.children[0].name, ElementType::Text);
-    assert_eq!(result6.children[0].text, "Hello");
-    assert_eq!(result6.children[1].name, ElementType::Em);
-    assert_eq!(result6.children[2].name, ElementType::Text);
-    assert_eq!(result6.children[2].text, "!");
+    assert_eq!(result6.element_data.name, ElementType::Div);
+    assert_eq!(result6.children[0].element_data.name, ElementType::Text);
+    assert_eq!(result6.children[0].element_data.text, "Hello");
+    assert_eq!(result6.children[1].element_data.name, ElementType::Em);
+    assert_eq!(result6.children[2].element_data.name, ElementType::Text);
+    assert_eq!(result6.children[2].element_data.text, "!");
 
     // id, classのパース
     let result7 = parse_nodes(r#"<div id="text" class="hi">text</div>"#);
-    assert_eq!(result7.name, ElementType::Div);
-    assert_eq!(result7.id, "text");
-    assert_eq!(result7.class, "hi");
-    assert_eq!(result7.children[0].name, ElementType::Text);
-    assert_eq!(result7.children[0].text, "text");
+    assert_eq!(result7.element_data.name, ElementType::Div);
+    assert_eq!(result7.element_data.id, "text");
+    assert_eq!(result7.element_data.class, "hi");
+    assert_eq!(result7.children[0].element_data.name, ElementType::Text);
+    assert_eq!(result7.children[0].element_data.text, "text");
 }
 
 #[test]

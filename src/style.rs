@@ -1,18 +1,18 @@
 use crate::{
     css::ast::{Block, Selector, Specificity, StyleSheet, Value},
-    html::ast::Element,
+    html::ast::{Element, ElementData, ElementType},
 };
 use std::collections::HashMap;
 
 type PropertyMap = HashMap<String, Value>;
 
-struct StyleNode<'a> {
+struct StyledNode<'a> {
     node: &'a Element,
     specified_values: PropertyMap,
-    children: Vec<StyleNode<'a>>,
+    children: Vec<StyledNode<'a>>,
 }
 
-fn matches(elem: &Element, selector: &Selector) -> bool {
+fn matches(elem: &ElementData, selector: &Selector) -> bool {
     if selector.element.is_some() && selector.element == Some(elem.name) {
         return false;
     }
@@ -31,7 +31,7 @@ fn matches(elem: &Element, selector: &Selector) -> bool {
 
 type MatchedBlock<'a> = (Specificity, &'a Block);
 
-fn match_block<'a>(elem: &Element, block: &'a Block) -> Option<MatchedBlock<'a>> {
+fn match_block<'a>(elem: &ElementData, block: &'a Block) -> Option<MatchedBlock<'a>> {
     block
         .selectors
         .iter()
@@ -39,7 +39,7 @@ fn match_block<'a>(elem: &Element, block: &'a Block) -> Option<MatchedBlock<'a>>
         .map(|selector| (selector.specificity(), block))
 }
 
-fn matching_blocks<'a>(elem: &Element, style_sheet: &'a StyleSheet) -> Vec<MatchedBlock<'a>> {
+fn matching_blocks<'a>(elem: &ElementData, style_sheet: &'a StyleSheet) -> Vec<MatchedBlock<'a>> {
     style_sheet
         .blocks
         .iter()
@@ -47,7 +47,7 @@ fn matching_blocks<'a>(elem: &Element, style_sheet: &'a StyleSheet) -> Vec<Match
         .collect()
 }
 
-fn specified_values(elem: &Element, style_sheet: &StyleSheet) -> PropertyMap {
+fn specified_values(elem: &ElementData, style_sheet: &StyleSheet) -> PropertyMap {
     let mut values = HashMap::new();
     let mut blocks = matching_blocks(elem, style_sheet);
 
@@ -58,4 +58,20 @@ fn specified_values(elem: &Element, style_sheet: &StyleSheet) -> PropertyMap {
         }
     }
     values
+}
+
+pub fn style_tree<'a>(root: &'a Element, style_sheet: &'a StyleSheet) -> StyledNode<'a> {
+    let specified: PropertyMap = match root.element_data.name {
+        ElementType::H1 => HashMap::new(),
+        _ => specified_values(&root.element_data, style_sheet),
+    };
+    StyledNode {
+        node: root,
+        specified_values: specified,
+        children: root
+            .children
+            .iter()
+            .map(|child| style_tree(child, style_sheet))
+            .collect(),
+    }
 }
