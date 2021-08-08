@@ -6,7 +6,7 @@ use std::collections::HashMap;
 
 type PropertyMap = HashMap<String, Value>;
 
-struct StyledNode<'a> {
+pub struct StyledNode<'a> {
     node: &'a Element,
     specified_values: PropertyMap,
     children: Vec<StyledNode<'a>>,
