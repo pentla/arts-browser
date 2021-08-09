@@ -6,10 +6,34 @@ use std::collections::HashMap;
 
 type PropertyMap = HashMap<String, Value>;
 
+pub enum Display {
+    Inline,
+    Block,
+    None,
+}
+
 pub struct StyledNode<'a> {
     node: &'a Element,
     specified_values: PropertyMap,
-    children: Vec<StyledNode<'a>>,
+    pub children: Vec<StyledNode<'a>>,
+}
+
+impl StyledNode<'_> {
+    pub fn value(&self, name: &str) -> Option<Value> {
+        self.specified_values.get(name).map(|v| v.clone())
+    }
+
+    pub fn display(&self) -> Display {
+        match self.value("display") {
+            Some(Value::Keyword(s)) => match s.as_str() {
+                "block" => Display::Block,
+                "inline" => Display::Inline,
+                "none" => Display::None,
+                _ => Display::Inline,
+            },
+            _ => Display::Inline,
+        }
+    }
 }
 
 fn matches(elem: &ElementData, selector: &Selector) -> bool {
