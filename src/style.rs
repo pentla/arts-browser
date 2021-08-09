@@ -34,6 +34,10 @@ impl StyledNode<'_> {
             _ => Display::Inline,
         }
     }
+    pub fn lookup(&self, name: &str, fallback: &str, default: &Value) -> Value {
+        self.value(name)
+            .unwrap_or_else(|| self.value(fallback).unwrap_or_else(|| default.clone()))
+    }
 }
 
 fn matches(elem: &ElementData, selector: &Selector) -> bool {
