@@ -2,7 +2,7 @@ use crate::css::ast::{Unit, Value};
 use crate::style::{Display, StyledNode};
 use std::default::Default;
 
-#[derive(Default)]
+#[derive(Default, Clone, Copy)]
 struct Dimensions {
     content: Rect,
     padding: EdgeSizes,
@@ -22,7 +22,7 @@ impl Dimensions {
     }
 }
 
-#[derive(Default)]
+#[derive(Default, Clone, Copy)]
 struct Rect {
     x: f32,
     y: f32,
@@ -41,7 +41,7 @@ impl Rect {
     }
 }
 
-#[derive(Default)]
+#[derive(Default, Copy, Clone)]
 struct EdgeSizes {
     left: f32,
     right: f32,
@@ -78,11 +78,11 @@ impl<'a> LayoutBox<'a> {
             }
         }
     }
-    fn get_style_node(&self) -> Option<&StyledNode<'a>> {
+    fn get_style_node(&self) -> &'a StyledNode<'a> {
         match self.box_type {
-            BoxType::BlockNode(style_node) => Some(style_node),
-            BoxType::InlineNode(style_node) => Some(style_node),
-            BoxType::AnonymouseBlock => None,
+            BoxType::BlockNode(style_node) => style_node,
+            BoxType::InlineNode(style_node) => style_node,
+            BoxType::AnonymouseBlock => panic!("Anonymous block box has no style node"),
         }
     }
     fn layout(&mut self, containing_block: Dimensions) {
@@ -105,10 +105,10 @@ impl<'a> LayoutBox<'a> {
     }
 
     fn calc_block_width(&mut self, container_block: Dimensions) {
-        let style = self.get_style_node().unwrap();
+        let style = self.get_style_node();
 
         let auto = Value::Keyword("auto".to_string());
-        let width = style.value("width").unwrap_or(auto.clone());
+        let mut width = style.value("width").unwrap_or(auto.clone());
 
         let zero = Value::Length(0.0, Unit::Px);
         let mut margin_left = style.lookup("margin-left", "margin", &zero);
@@ -178,10 +178,22 @@ impl<'a> LayoutBox<'a> {
                 margin_right = Value::Length(underflow / 2.0, Unit::Px);
             }
         }
+
+        let d = &mut self.dimensions;
+        d.content.width = width.to_px();
+        d.padding.left = padding_left.to_px();
+        d.padding.right = padding_right.to_px();
+
+        d.border.left = border_left.to_px();
+        d.border.right = border_right.to_px();
+
+        d.margin.left = margin_left.to_px();
+        d.margin.right = margin_right.to_px();
     }
 
     fn calc_block_position(&mut self, containing_block: Dimensions) {
-        let style = self.get_style_node().unwrap();
+        // 参照をとっているかもしれない。怪しい
+        let style = self.get_style_node();
         let d = &mut self.dimensions;
 
         let zero = Value::Length(0.0, Unit::Px);
