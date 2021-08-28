@@ -68,5 +68,27 @@ fn render_borders(list: &mut DisplayList, layout_box: &LayoutBox) {
             width: d.border.right,
             height: border_box.height,
         },
-    ))
+    ));
+
+    // top border
+    list.push(DisplayCommand::SolidColor(
+        color,
+        Rect {
+            x: border_box.x,
+            y: border_box.y,
+            width: border_box.width,
+            height: d.border.top,
+        },
+    ));
+
+    // bottom border
+    list.push(DisplayCommand::SolidColor(
+        color,
+        Rect {
+            x: border_box.x,
+            y: border_box.y + border_box.height - d.border.bottom,
+            width: border_box.width,
+            height: d.border.bottom,
+        },
+    ));
 }
