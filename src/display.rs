@@ -3,11 +3,11 @@ use crate::layout::{BoxType, LayoutBox, Rect};
 
 type DisplayList = Vec<DisplayCommand>;
 
-enum DisplayCommand {
+pub enum DisplayCommand {
     SolidColor(Color, Rect),
 }
 
-fn build_display_list(layout_root: &LayoutBox) -> DisplayList {
+pub fn build_display_list(layout_root: &LayoutBox) -> DisplayList {
     let mut list = Vec::new();
     render_layout_box(&mut list, layout_root);
     list
