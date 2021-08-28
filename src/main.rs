@@ -3,6 +3,7 @@ extern crate pest;
 extern crate pest_derive;
 
 mod css;
+mod display;
 mod html;
 mod layout;
 mod style;
