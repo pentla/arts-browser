@@ -187,7 +187,7 @@ impl Property {
 #[derive(Debug, Clone, PartialEq)]
 pub enum Value {
     Keyword(String),
-    Color,
+    Color(Color),
     Length(f32, Unit),
     Undefined,
 }
@@ -206,9 +206,10 @@ pub enum Unit {
     Px,
 }
 
-// pub struct Color {
-//     r: u8,
-//     g: u8,
-//     b: u8,
-//     a: u8,
-// }
+#[derive(Debug, PartialEq, Clone, Copy)]
+pub struct Color {
+    pub r: u8,
+    pub g: u8,
+    pub b: u8,
+    pub a: u8,
+}
