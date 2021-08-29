@@ -89,75 +89,72 @@ fn get_px(input: &str) -> Result<f32> {
 impl Declaration {
     pub fn new(prop: &str, val: &str) -> Result<Declaration> {
         let property = property_type(prop);
-        let mut value = Value::Undefined;
-        match property {
+        let value: Value = match property {
             Property::Padding => {
                 let px = get_px(val);
                 match px {
-                    Ok(px) => value = Value::Length(px, Unit::Px),
-                    Err(err) => value = Value::Keyword(val.to_string()),
+                    Ok(px) => Value::Length(px, Unit::Px),
+                    Err(err) => Value::Keyword(val.to_string()),
                 }
             }
             Property::Margin => {
                 let px = get_px(val);
                 match px {
-                    Ok(px) => value = Value::Length(px, Unit::Px),
-                    Err(err) => value = Value::Keyword(val.to_string()),
+                    Ok(px) => Value::Length(px, Unit::Px),
+                    Err(err) => Value::Keyword(val.to_string()),
                 }
             }
             Property::MarginTop => {
                 let px = get_px(val);
                 match px {
-                    Ok(px) => value = Value::Length(px, Unit::Px),
-                    Err(err) => value = Value::Keyword(val.to_string()),
+                    Ok(px) => Value::Length(px, Unit::Px),
+                    Err(err) => Value::Keyword(val.to_string()),
                 }
             }
             Property::MarginLeft => {
                 let px = get_px(val);
                 match px {
-                    Ok(px) => value = Value::Length(px, Unit::Px),
-                    Err(err) => value = Value::Keyword(val.to_string()),
+                    Ok(px) => Value::Length(px, Unit::Px),
+                    Err(err) => Value::Keyword(val.to_string()),
                 }
             }
             Property::MarginRight => {
                 let px = get_px(val);
                 match px {
-                    Ok(px) => value = Value::Length(px, Unit::Px),
-                    Err(err) => value = Value::Keyword(val.to_string()),
+                    Ok(px) => Value::Length(px, Unit::Px),
+                    Err(err) => Value::Keyword(val.to_string()),
                 }
             }
             Property::MarginBottom => {
                 let px = get_px(val);
                 match px {
-                    Ok(px) => value = Value::Length(px, Unit::Px),
-                    Err(err) => value = Value::Keyword(val.to_string()),
+                    Ok(px) => Value::Length(px, Unit::Px),
+                    Err(err) => Value::Keyword(val.to_string()),
                 }
             }
-            Property::Display => {
-                value = Value::Keyword(val.to_string());
-            }
+            Property::Display => Value::Keyword(val.to_string()),
             Property::Width => {
                 let px = get_px(val).unwrap();
-                value = Value::Length(px, Unit::Px);
+                Value::Length(px, Unit::Px)
             }
             Property::Height => {
                 let px = get_px(val).unwrap();
-                value = Value::Length(px, Unit::Px);
+                Value::Length(px, Unit::Px)
             }
             Property::FontSize => {
                 let px = get_px(val).unwrap();
-                value = Value::Length(px, Unit::Px);
+                Value::Length(px, Unit::Px)
             }
             Property::BackgroundColor => {
                 // FIX: colorに修正
-                value = Value::Keyword(val.to_string());
+                Value::Keyword(val.to_string())
             }
             Property::Color => {
                 // FIX: colorに修正
-                value = Value::Keyword(val.to_string());
+                Value::Keyword(val.to_string())
             }
-            _ => {}
-        }
+            _ => Value::Undefined,
+        };
         Ok(Declaration { property, value })
     }
 }
