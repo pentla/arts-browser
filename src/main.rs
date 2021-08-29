@@ -2,7 +2,14 @@ extern crate pest;
 #[macro_use]
 extern crate pest_derive;
 
+use clap::{load_yaml, App};
+use std::fs::File;
+use std::io::prelude::*;
+use std::io::BufWriter;
+use std::path::Path;
+
 mod canvas;
+mod cli;
 mod css;
 mod display;
 mod html;
@@ -11,4 +18,47 @@ mod style;
 
 use pest::Parser;
 
-fn main() {}
+fn main() {
+    let yaml = load_yaml!("cli.yml");
+    let matches = App::from(yaml).get_matches();
+
+    let read_source = |arg_filename: Option<&str>, default_filename: &str| {
+        let path = match arg_filename {
+            Some(ref filename) => filename,
+            None => default_filename,
+        };
+        let mut file = File::open(&Path::new(path)).unwrap();
+        let mut content = String::new();
+        file.read_to_string(&mut content).unwrap();
+        content
+    };
+    let html = read_source(matches.value_of("html"), "examples/test.html");
+    let css = read_source(matches.value_of("css"), "examples/test.css");
+
+    let initial_containing_block = layout::Dimensions {
+        content: layout::Rect {
+            x: 0.0,
+            y: 0.0,
+            width: 800.0,
+            height: 600.0,
+        },
+        padding: Default::default(),
+        border: Default::default(),
+        margin: Default::default(),
+    };
+
+    let root_node = html::parse::parse_nodes(html.as_str());
+    let stylesheet = css::parse::parse_css(css.as_str());
+    let style_root = style::style_tree(&root_node, &stylesheet);
+    let layout_root = layout::layout_tree(&style_root, initial_containing_block);
+    let canvas = canvas::paint(&layout_root, initial_containing_block.content);
+
+    let filename = matches.value_of("output").unwrap_or("output.png");
+    let file = BufWriter::new(File::create(&Path::new(filename)).unwrap());
+
+    let (w, h) = (canvas.width as u32, canvas.height as u32);
+    let img = image::ImageBuffer::from_fn(w, h, move |x, y| {
+        let color = canvas.pixels[(y * w + x) as usize];
+        image::Pixel::from_channels(color.r, color.g, color.b, color.a)
+    });
+}

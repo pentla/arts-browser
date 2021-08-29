@@ -1,5 +1,6 @@
 use crate::css::ast::{Unit, Value};
 use crate::style::{Display, StyledNode};
+use std::alloc::Layout;
 use std::default::Default;
 
 #[derive(Default, Clone, Copy)]
@@ -235,6 +236,13 @@ pub enum BoxType<'a> {
     BlockNode(&'a StyledNode<'a>),
     InlineNode(&'a StyledNode<'a>),
     AnonymouseBlock,
+}
+
+pub fn layout_tree<'a>(node: &'a StyledNode, mut containing_block: Dimensions) -> LayoutBox<'a> {
+    containing_block.content.height = 0.0;
+    let mut root_box = build_layout_tree(node);
+    root_box.layout(containing_block);
+    root_box
 }
 
 fn build_layout_tree<'a>(style_node: &'a StyledNode) -> LayoutBox<'a> {
