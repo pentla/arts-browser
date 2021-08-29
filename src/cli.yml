@@ -1,0 +1,17 @@
+name: myapp
+version: "1.0"
+author: pentla <watkazuki03@gmail.com>
+args:
+  - html:
+      short: h
+      long: html
+      value_name: FILE
+  - css:
+      short: c
+      long: css
+      value_name: FILE
+  - output:
+      short: o
+      long: output
+      value_name: FILE
+

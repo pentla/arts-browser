@@ -12,7 +12,7 @@ use crate::{
 #[grammar = "css/css.pest"]
 pub struct CSSParser;
 
-fn parse_css(input: &str) -> StyleSheet {
+pub fn parse_css(input: &str) -> StyleSheet {
     let parser = CSSParser::parse(Rule::css, input).unwrap();
     let mut css = StyleSheet::new();
     for line in parser.into_iter() {

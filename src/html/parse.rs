@@ -7,7 +7,7 @@ use crate::html::ast::{element_type, Element, ElementType};
 #[grammar = "html/html.pest"]
 pub struct HTMLParser;
 
-fn parse_nodes(input: &str) -> Element {
+pub fn parse_nodes(input: &str) -> Element {
     let parser = HTMLParser::parse(Rule::html, input).unwrap();
     let mut element: Element = Element::new(String::from(""));
     for line in parser.into_iter() {

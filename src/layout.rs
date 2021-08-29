@@ -1,8 +1,9 @@
 use crate::css::ast::{Unit, Value};
 use crate::style::{Display, StyledNode};
+use std::alloc::Layout;
 use std::default::Default;
 
-#[derive(Default, Clone, Copy)]
+#[derive(Debug, Default, Clone, Copy)]
 pub struct Dimensions {
     pub content: Rect,
     pub padding: EdgeSizes,
@@ -22,7 +23,7 @@ impl Dimensions {
     }
 }
 
-#[derive(Default, Clone, Copy)]
+#[derive(Debug, Default, Clone, Copy)]
 pub struct Rect {
     pub x: f32,
     pub y: f32,
@@ -41,7 +42,7 @@ impl Rect {
     }
 }
 
-#[derive(Default, Copy, Clone)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct EdgeSizes {
     pub left: f32,
     pub right: f32,
@@ -49,6 +50,7 @@ pub struct EdgeSizes {
     pub bottom: f32,
 }
 
+#[derive(Debug)]
 pub struct LayoutBox<'a> {
     pub dimensions: Dimensions,
     pub box_type: BoxType<'a>,
@@ -231,10 +233,18 @@ impl<'a> LayoutBox<'a> {
     }
 }
 
+#[derive(Debug)]
 pub enum BoxType<'a> {
     BlockNode(&'a StyledNode<'a>),
     InlineNode(&'a StyledNode<'a>),
     AnonymouseBlock,
+}
+
+pub fn layout_tree<'a>(node: &'a StyledNode, mut containing_block: Dimensions) -> LayoutBox<'a> {
+    containing_block.content.height = 0.0;
+    let mut root_box = build_layout_tree(node);
+    root_box.layout(containing_block);
+    root_box
 }
 
 fn build_layout_tree<'a>(style_node: &'a StyledNode) -> LayoutBox<'a> {

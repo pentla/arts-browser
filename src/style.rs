@@ -12,6 +12,7 @@ pub enum Display {
     None,
 }
 
+#[derive(Debug)]
 pub struct StyledNode<'a> {
     node: &'a Element,
     specified_values: PropertyMap,
