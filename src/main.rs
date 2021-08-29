@@ -3,9 +3,9 @@ extern crate pest;
 extern crate pest_derive;
 
 use clap::{load_yaml, App};
+use image::{DynamicImage, ImageBuffer};
 use std::fs::File;
 use std::io::prelude::*;
-use std::io::BufWriter;
 use std::path::Path;
 
 mod canvas;
@@ -54,11 +54,12 @@ fn main() {
     let canvas = canvas::paint(&layout_root, initial_containing_block.content);
 
     let filename = matches.value_of("output").unwrap_or("output.png");
-    let file = BufWriter::new(File::create(&Path::new(filename)).unwrap());
+    // let file = BufWriter::new(File::create(&Path::new(filename)).unwrap());
 
     let (w, h) = (canvas.width as u32, canvas.height as u32);
-    let img = image::ImageBuffer::from_fn(w, h, move |x, y| {
+    let img = ImageBuffer::from_fn(w, h, move |x, y| {
         let color = canvas.pixels[(y * w + x) as usize];
-        image::Pixel::from_channels(color.r, color.g, color.b, color.a)
+        image::Rgba([color.r, color.g, color.b, color.a])
     });
+    DynamicImage::ImageRgba8(img).save(filename).unwrap();
 }
