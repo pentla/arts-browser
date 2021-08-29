@@ -3,7 +3,7 @@ use crate::style::{Display, StyledNode};
 use std::alloc::Layout;
 use std::default::Default;
 
-#[derive(Default, Clone, Copy)]
+#[derive(Debug, Default, Clone, Copy)]
 pub struct Dimensions {
     pub content: Rect,
     pub padding: EdgeSizes,
@@ -23,7 +23,7 @@ impl Dimensions {
     }
 }
 
-#[derive(Default, Clone, Copy)]
+#[derive(Debug, Default, Clone, Copy)]
 pub struct Rect {
     pub x: f32,
     pub y: f32,
@@ -42,7 +42,7 @@ impl Rect {
     }
 }
 
-#[derive(Default, Copy, Clone)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct EdgeSizes {
     pub left: f32,
     pub right: f32,
@@ -50,6 +50,7 @@ pub struct EdgeSizes {
     pub bottom: f32,
 }
 
+#[derive(Debug)]
 pub struct LayoutBox<'a> {
     pub dimensions: Dimensions,
     pub box_type: BoxType<'a>,
@@ -232,6 +233,7 @@ impl<'a> LayoutBox<'a> {
     }
 }
 
+#[derive(Debug)]
 pub enum BoxType<'a> {
     BlockNode(&'a StyledNode<'a>),
     InlineNode(&'a StyledNode<'a>),

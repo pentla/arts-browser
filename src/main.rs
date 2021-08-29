@@ -51,11 +51,11 @@ fn main() {
     let stylesheet = css::parse::parse_css(css.as_str());
     let style_root = style::style_tree(&root_node, &stylesheet);
     let layout_root = layout::layout_tree(&style_root, initial_containing_block);
+    println!("{:?}", layout_root);
     let canvas = canvas::paint(&layout_root, initial_containing_block.content);
 
     let filename = matches.value_of("output").unwrap_or("output.png");
     // let file = BufWriter::new(File::create(&Path::new(filename)).unwrap());
-
     let (w, h) = (canvas.width as u32, canvas.height as u32);
     let img = ImageBuffer::from_fn(w, h, move |x, y| {
         let color = canvas.pixels[(y * w + x) as usize];

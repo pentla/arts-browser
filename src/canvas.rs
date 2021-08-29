@@ -3,6 +3,7 @@ use crate::display::{build_display_list, DisplayCommand};
 use crate::layout::{LayoutBox, Rect};
 use std::iter::repeat;
 
+#[derive(Debug)]
 pub struct Canvas {
     pub pixels: Vec<Color>,
     pub width: usize,
