@@ -12,3 +12,4 @@ pest_derive = "2.0"
 anyhow = "1.0"
 clap = { version = "3.0.0-beta.4", features = ["yaml"] }
 image = "0.23.14"
+regex = "1"

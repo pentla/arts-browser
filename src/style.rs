@@ -1,5 +1,5 @@
 use crate::{
-    css::ast::{Block, Selector, Specificity, StyleSheet, Value},
+    css::ast::{Block, Declaration, Selector, Specificity, StyleSheet, Value},
     html::ast::{Element, ElementData, ElementType},
 };
 use std::collections::HashMap;
@@ -41,19 +41,20 @@ impl StyledNode<'_> {
     }
 }
 
+// 要素が一致するselectorを見つけたらtrue, そうでなければfalseを返す
 fn matches(elem: &ElementData, selector: &Selector) -> bool {
     if selector.element.is_some() && selector.element == Some(elem.name) {
-        return false;
+        return true;
     }
     if selector.id.is_some() && selector.id == Some(elem.id.clone()) {
-        return false;
+        return true;
     }
     if selector
         .class
         .iter()
         .any(|class| elem.class.contains(class))
     {
-        return false;
+        return true;
     }
     false
 }
@@ -86,12 +87,13 @@ fn specified_values(elem: &ElementData, style_sheet: &StyleSheet) -> PropertyMap
             values.insert(declaration.property.to_string(), declaration.value.clone());
         }
     }
+    // println!("{:?}", values);
     values
 }
 
 pub fn style_tree<'a>(root: &'a Element, style_sheet: &'a StyleSheet) -> StyledNode<'a> {
     let specified: PropertyMap = match root.element_data.name {
-        ElementType::H1 => HashMap::new(),
+        ElementType::Text => HashMap::new(),
         _ => specified_values(&root.element_data, style_sheet),
     };
     StyledNode {
@@ -103,4 +105,35 @@ pub fn style_tree<'a>(root: &'a Element, style_sheet: &'a StyleSheet) -> StyledN
             .map(|child| style_tree(child, style_sheet))
             .collect(),
     }
+}
+
+#[test]
+fn test_matches() {
+    let test_element = ElementData {
+        name: ElementType::Div,
+        text: String::from("hello"),
+        id: String::from("test_element"),
+        class: String::from("test"),
+    };
+    let mut selector = Selector::new();
+
+    // class, idの指定がない場合
+    let test0 = matches(&test_element, &selector);
+    assert_eq!(test0, false);
+
+    // 一致するclassがある場合
+    selector.class = vec![String::from("test")];
+    let test1 = matches(&test_element, &selector);
+    assert_eq!(test1, true);
+
+    // 一致するclassと一致しないclassがある場合
+    selector.class = vec![String::from("test"), String::from("q")];
+    let test2 = matches(&test_element, &selector);
+    assert_eq!(test2, true);
+
+    // idが一致する場合
+    selector.class = vec![];
+    selector.id = Some(String::from("test_element"));
+    let test3 = matches(&test_element, &selector);
+    assert_eq!(test3, true);
 }

@@ -1,4 +1,4 @@
-use crate::css::ast::Color;
+use crate::css::color::Color;
 use crate::display::{build_display_list, DisplayCommand};
 use crate::layout::{LayoutBox, Rect};
 use std::iter::repeat;
@@ -34,7 +34,7 @@ impl Canvas {
 
                 for y in y0..y1 {
                     for x in x0..x1 {
-                        self.pixels[x + y * self.width] = color;
+                        self.pixels[y * self.width + x] = color;
                     }
                 }
             }
@@ -43,7 +43,8 @@ impl Canvas {
 }
 
 pub fn paint(layout_root: &LayoutBox, bounds: Rect) -> Canvas {
-    let mut display_list = build_display_list(layout_root);
+    let display_list = build_display_list(layout_root);
+    // println!("{:?}", display_list);
     let mut canvas = Canvas::new(bounds.width as usize, bounds.height as usize);
     for item in display_list {
         canvas.paint_item(&item);

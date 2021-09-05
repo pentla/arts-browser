@@ -1,8 +1,10 @@
-use crate::css::ast::{Color, Value};
+use crate::css::ast::Value;
+use crate::css::color::Color;
 use crate::layout::{BoxType, LayoutBox, Rect};
 
 type DisplayList = Vec<DisplayCommand>;
 
+#[derive(Debug)]
 pub enum DisplayCommand {
     SolidColor(Color, Rect),
 }
@@ -23,11 +25,12 @@ fn render_layout_box(list: &mut DisplayList, layout_box: &LayoutBox) {
 }
 
 fn render_background(list: &mut DisplayList, layout_box: &LayoutBox) {
-    get_color(layout_box, "background").map(|color| {
+    // FIXME: background-colorにしか対応していないので、background両方に対応させたい
+    get_color(layout_box, "background-color").map(|color| {
         list.push(DisplayCommand::SolidColor(
             color,
             layout_box.dimensions.border_box(),
-        ))
+        ));
     });
 }
 

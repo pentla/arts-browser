@@ -5,6 +5,7 @@ use pest::Parser;
 
 use crate::{
     css::ast::{Block, Declaration, Property, Selector, StyleSheet, Unit, Value},
+    css::color::Color,
     html::ast::{element_type, Element, ElementType},
 };
 
@@ -167,7 +168,15 @@ span {
     assert_eq!(dec2_1.value, Value::Keyword("inline-block".to_string()));
     let dec2_2 = block2.declarations.get(1).unwrap();
     assert_eq!(dec2_2.property, Property::BackgroundColor);
-    assert_eq!(dec2_2.value, Value::Keyword("black".to_string()));
+    assert_eq!(
+        dec2_2.value,
+        Value::Color(Color {
+            r: 0,
+            g: 0,
+            b: 0,
+            a: 1
+        })
+    );
 }
 
 #[test]
@@ -193,7 +202,15 @@ div.note { margin-bottom: 20px; padding: 10px; }
     assert_eq!(dec1_1.value, Value::Keyword("auto".to_string()));
     let dec1_2 = block1.declarations.get(1).unwrap();
     assert_eq!(dec1_2.property, Property::Color);
-    assert_eq!(dec1_2.value, Value::Keyword("#cc0000".to_string()));
+    assert_eq!(
+        dec1_2.value,
+        Value::Color(Color {
+            r: 204,
+            g: 0,
+            b: 0,
+            a: 1
+        })
+    );
 
     let block2 = result1.blocks.get(1).unwrap();
     let sel2 = block2.selectors.get(0).unwrap();
