@@ -1,4 +1,5 @@
-use crate::css::ast::{Color, Value};
+use crate::css::ast::Value;
+use crate::css::color::Color;
 use crate::layout::{BoxType, LayoutBox, Rect};
 
 type DisplayList = Vec<DisplayCommand>;

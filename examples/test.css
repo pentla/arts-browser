@@ -3,7 +3,7 @@ html {
   padding: 10px;
   border-width: 1px;
   margin: auto;
-  background: #ffffff;
+  background-color: #666666;
 }
 
 head {
@@ -11,7 +11,7 @@ head {
 }
 
 .outer {
-  background: #00ccff;
+  background-color: #00ccff;
   border-color: #666666;
   border-width: 2px;
   margin: 50px;

@@ -1,4 +1,4 @@
-use crate::css::ast::Color;
+use crate::css::color::Color;
 use crate::display::{build_display_list, DisplayCommand};
 use crate::layout::{LayoutBox, Rect};
 use std::iter::repeat;
