@@ -44,19 +44,19 @@ impl StyledNode<'_> {
 // 要素が一致するselectorを見つけたらtrue, そうでなければfalseを返す
 fn matches(elem: &ElementData, selector: &Selector) -> bool {
     if selector.element.is_some() && selector.element == Some(elem.name) {
-        return false;
+        return true;
     }
     if selector.id.is_some() && selector.id == Some(elem.id.clone()) {
-        return false;
+        return true;
     }
     if selector
         .class
         .iter()
         .any(|class| elem.class.contains(class))
     {
-        return false;
+        return true;
     }
-    true
+    false
 }
 
 type MatchedBlock<'a> = (Specificity, &'a Block);
@@ -117,19 +117,23 @@ fn test_matches() {
     };
     let mut selector = Selector::new();
 
+    // class, idの指定がない場合
     let test0 = matches(&test_element, &selector);
-    assert_eq!(test0, true);
+    assert_eq!(test0, false);
 
+    // 一致するclassがある場合
     selector.class = vec![String::from("test")];
     let test1 = matches(&test_element, &selector);
-    assert_eq!(test1, false);
+    assert_eq!(test1, true);
 
+    // 一致するclassと一致しないclassがある場合
     selector.class = vec![String::from("test"), String::from("q")];
     let test2 = matches(&test_element, &selector);
-    assert_eq!(test2, false);
+    assert_eq!(test2, true);
 
+    // idが一致する場合
     selector.class = vec![];
     selector.id = Some(String::from("test_element"));
     let test3 = matches(&test_element, &selector);
-    assert_eq!(test3, false);
+    assert_eq!(test3, true);
 }
