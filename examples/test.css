@@ -6,10 +6,6 @@ html {
   background-color: #666666;
 }
 
-head {
-  display: none;
-}
-
 .outer {
   background-color: #00ccff;
   border-color: #666666;

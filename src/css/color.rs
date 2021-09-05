@@ -29,7 +29,7 @@ impl Color {
                 new_hex.push(char);
                 new_hex.push(char);
             }
-            hex = new_hex.to_string();
+            hex = new_hex;
         }
         Some(Color {
             r: hex_pair(&hex[0..2]),

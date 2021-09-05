@@ -55,7 +55,7 @@ fn matches(elem: &ElementData, selector: &Selector) -> bool {
     {
         return false;
     }
-    false
+    true
 }
 
 type MatchedBlock<'a> = (Specificity, &'a Block);
@@ -79,7 +79,6 @@ fn matching_blocks<'a>(elem: &ElementData, style_sheet: &'a StyleSheet) -> Vec<M
 fn specified_values(elem: &ElementData, style_sheet: &StyleSheet) -> PropertyMap {
     let mut values = HashMap::new();
     let mut blocks = matching_blocks(elem, style_sheet);
-
     blocks.sort_by(|&(a, _), &(b, _)| a.cmp(&b));
     for (_, block) in blocks {
         for declaration in &block.declarations {
