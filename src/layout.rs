@@ -155,7 +155,7 @@ impl<'a> LayoutBox<'a> {
 
             // margin_right, margin_leftのどちらかが指定されている場合、underflowの値を入れる。
             (false, false, true) => margin_right = Value::Length(underflow, Unit::Px),
-            (false, true, false) => margin_right = Value::Length(underflow, Unit::Px),
+            (false, true, false) => margin_left = Value::Length(underflow, Unit::Px),
 
             // widthがautoの場合は、他の値は0になる
             (true, _, _) => {

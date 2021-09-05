@@ -44,6 +44,7 @@ impl Canvas {
 
 pub fn paint(layout_root: &LayoutBox, bounds: Rect) -> Canvas {
     let display_list = build_display_list(layout_root);
+    // println!("{:?}", display_list);
     let mut canvas = Canvas::new(bounds.width as usize, bounds.height as usize);
     for item in display_list {
         canvas.paint_item(&item);

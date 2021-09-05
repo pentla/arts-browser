@@ -9,7 +9,6 @@ use std::io::prelude::*;
 use std::path::Path;
 
 mod canvas;
-mod cli;
 mod css;
 mod display;
 mod html;
@@ -49,8 +48,11 @@ fn main() {
 
     let root_node = html::parse::parse_nodes(html.as_str());
     let stylesheet = css::parse::parse_css(css.as_str());
+    // println!("{:?}", stylesheet);
     let style_root = style::style_tree(&root_node, &stylesheet);
+    // println!("{:?}", style_root);
     let layout_root = layout::layout_tree(&style_root, initial_containing_block);
+    // println!("{:?}", layout_root);
     let canvas = canvas::paint(&layout_root, initial_containing_block.content);
     let filename = matches.value_of("output").unwrap_or("output.png");
     let (w, h) = (canvas.width as u32, canvas.height as u32);
