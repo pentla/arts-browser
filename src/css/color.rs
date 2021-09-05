@@ -13,7 +13,7 @@ impl Color {
         if color_name.chars().next().unwrap() == '#' {
             return Color::hex_to_rgba(color_name);
         }
-        None
+        Color::default_color_name(color_name)
     }
     fn hex_to_rgba(mut hex_code: &str) -> Option<Self> {
         hex_code = remove_first_char(hex_code);
@@ -37,6 +37,48 @@ impl Color {
             b: hex_pair(&hex[4..6]),
             a: 1,
         })
+    }
+
+    fn default_color_name(name: &str) -> Option<Color> {
+        match name {
+            "black" => Some(Color {
+                r: 0,
+                g: 0,
+                b: 0,
+                a: 1,
+            }),
+            "gray" => Some(Color {
+                r: 128,
+                g: 128,
+                b: 128,
+                a: 1,
+            }),
+            "white" => Some(Color {
+                r: 255,
+                g: 255,
+                b: 255,
+                a: 1,
+            }),
+            "blue" => Some(Color {
+                r: 0,
+                g: 0,
+                b: 255,
+                a: 0,
+            }),
+            "yellow" => Some(Color {
+                r: 0,
+                g: 128,
+                b: 0,
+                a: 1,
+            }),
+            "red" => Some(Color {
+                r: 255,
+                g: 0,
+                b: 0,
+                a: 1,
+            }),
+            _ => None,
+        }
     }
 }
 
