@@ -34,7 +34,7 @@ impl Canvas {
 
                 for y in y0..y1 {
                     for x in x0..x1 {
-                        self.pixels[x + y * self.width] = color;
+                        self.pixels[y * self.width + x] = color;
                     }
                 }
             }

@@ -52,12 +52,11 @@ fn main() {
     let style_root = style::style_tree(&root_node, &stylesheet);
     let layout_root = layout::layout_tree(&style_root, initial_containing_block);
     let canvas = canvas::paint(&layout_root, initial_containing_block.content);
-
     let filename = matches.value_of("output").unwrap_or("output.png");
     let (w, h) = (canvas.width as u32, canvas.height as u32);
     let img = ImageBuffer::from_fn(w, h, move |x, y| {
         let color = canvas.pixels[(y * w + x) as usize];
-        image::Rgba([color.r, color.g, color.b, color.a])
+        image::Rgb([color.r, color.g, color.b])
     });
-    DynamicImage::ImageRgba8(img).save(filename).unwrap();
+    DynamicImage::ImageRgb8(img).save(filename).unwrap();
 }
