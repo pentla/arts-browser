@@ -65,9 +65,16 @@ impl Color {
                 b: 255,
                 a: 0,
             }),
-            "yellow" => Some(Color {
+
+            "green" => Some(Color {
                 r: 0,
                 g: 128,
+                b: 0,
+                a: 1,
+            }),
+            "yellow" => Some(Color {
+                r: 255,
+                g: 255,
                 b: 0,
                 a: 1,
             }),
