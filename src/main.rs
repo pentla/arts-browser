@@ -10,9 +10,9 @@ use std::path::Path;
 
 mod canvas;
 mod css;
-mod display;
 mod html;
 mod layout;
+mod paint;
 mod style;
 
 use pest::Parser;

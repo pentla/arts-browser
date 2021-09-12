@@ -1,6 +1,5 @@
 use crate::css::ast::{Unit, Value};
 use crate::style::{Display, StyledNode};
-use std::alloc::Layout;
 use std::default::Default;
 
 #[derive(Debug, Default, Clone, Copy)]

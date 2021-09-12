@@ -1,6 +1,6 @@
 use crate::css::color::Color;
-use crate::display::{build_display_list, DisplayCommand};
 use crate::layout::{LayoutBox, Rect};
+use crate::paint::{build_display_list, DisplayCommand};
 use std::iter::repeat;
 
 #[derive(Debug)]
