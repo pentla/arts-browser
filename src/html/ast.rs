@@ -1,7 +1,7 @@
 #[derive(Debug, Clone)]
 pub struct Element {
     pub element_data: ElementData,
-    pub children: Vec<Box<Element>>,
+    pub children: Vec<Element>,
 }
 
 impl Element {

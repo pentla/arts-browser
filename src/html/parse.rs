@@ -32,12 +32,12 @@ fn parse_element(rule: Pair<Rule>) -> Element {
             }
             Rule::element => {
                 let child_element = parse_element(item);
-                element.children.push(Box::new(child_element));
+                element.children.push(child_element);
             }
             Rule::text => {
                 let mut text_element = Element::new(String::from("text"));
                 text_element.element_data.text = item.as_str().to_string();
-                element.children.push(Box::new(text_element));
+                element.children.push(text_element);
             }
             Rule::elementAttr => {
                 let mut attr_name = "";
