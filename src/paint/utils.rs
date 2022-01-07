@@ -11,3 +11,10 @@ pub fn get_color(layout_box: &LayoutBox, name: &str) -> Option<Color> {
         BoxType::AnonymouseBlock => None,
     }
 }
+
+pub fn get_text(layout_box: &LayoutBox) -> String {
+    match layout_box.box_type {
+        BoxType::BlockNode(style) | BoxType::InlineNode(style) => style.node.element_data.text,
+        BoxType::AnonymouseBlock => String::from(""),
+    }
+}

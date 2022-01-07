@@ -14,7 +14,7 @@ pub enum Display {
 
 #[derive(Debug)]
 pub struct StyledNode<'a> {
-    node: &'a Element,
+    pub node: &'a Element,
     specified_values: PropertyMap,
     pub children: Vec<StyledNode<'a>>,
 }
