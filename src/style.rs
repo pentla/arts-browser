@@ -1,7 +1,7 @@
-use crate::{
-    css::ast::{Block, Declaration, Selector, Specificity, StyleSheet, Value},
-    html::ast::{Element, ElementData, ElementType},
-};
+use crate::css::ast::{Block, Selector, Specificity, StyleSheet, Value};
+use crate::html::ast::{Element, ElementData, ElementType};
+use crate::mock::element::{gen_mock_element, ElementMockOption};
+use crate::mock::stylesheet::{gen_mock_stylesheet, StyleSheetMockOption};
 use std::collections::HashMap;
 
 type PropertyMap = HashMap<String, Value>;
@@ -42,7 +42,7 @@ impl StyledNode<'_> {
 }
 
 // 要素が一致するselectorを見つけたらtrue, そうでなければfalseを返す
-fn matches(elem: &ElementData, selector: &Selector) -> bool {
+fn exist_match_selector(elem: &ElementData, selector: &Selector) -> bool {
     if selector.element.is_some() && selector.element == Some(elem.name) {
         return true;
     }
@@ -65,7 +65,7 @@ fn match_block<'a>(elem: &ElementData, block: &'a Block) -> Option<MatchedBlock<
     block
         .selectors
         .iter()
-        .find(|selector| matches(elem, *selector))
+        .find(|selector| exist_match_selector(elem, *selector))
         .map(|selector| (selector.specificity(), block))
 }
 
@@ -77,7 +77,9 @@ fn matching_blocks<'a>(elem: &ElementData, style_sheet: &'a StyleSheet) -> Vec<M
         .collect()
 }
 
-fn specified_values(elem: &ElementData, style_sheet: &StyleSheet) -> PropertyMap {
+fn get_property_map(elem: &ElementData, style_sheet: &StyleSheet) -> PropertyMap {
+    println!("{:?}", elem);
+    println!("{:?}", style_sheet);
     let mut values = HashMap::new();
     let mut blocks = matching_blocks(elem, style_sheet);
 
@@ -87,14 +89,14 @@ fn specified_values(elem: &ElementData, style_sheet: &StyleSheet) -> PropertyMap
             values.insert(declaration.property.to_string(), declaration.value.clone());
         }
     }
-    // println!("{:?}", values);
     values
 }
 
 pub fn style_tree<'a>(root: &'a Element, style_sheet: &'a StyleSheet) -> StyledNode<'a> {
+    // textにCSSを直接指定できない(親タグに付与する)ため、textの場合は処理をスキップ
     let specified: PropertyMap = match root.element_data.name {
         ElementType::Text => HashMap::new(),
-        _ => specified_values(&root.element_data, style_sheet),
+        _ => get_property_map(&root.element_data, style_sheet),
     };
     StyledNode {
         node: root,
@@ -108,7 +110,19 @@ pub fn style_tree<'a>(root: &'a Element, style_sheet: &'a StyleSheet) -> StyledN
 }
 
 #[test]
-fn test_matches() {
+fn test_specified_values() {
+    let elem_option = ElementMockOption::new();
+    // FIXME: elemにidを付与
+    let elem = gen_mock_element(elem_option);
+    let stylesheet_option = StyleSheetMockOption::new();
+    // FIXME: stylesheetにpropertyとidを付与
+    let style_sheet = gen_mock_stylesheet(stylesheet_option);
+    let property_map = get_property_map(&elem.element_data, &style_sheet);
+    // FIXME: hashmapの生成を確認
+}
+
+#[test]
+fn test_exist_match_selector() {
     let test_element = ElementData {
         name: ElementType::Div,
         text: String::from("hello"),
@@ -118,22 +132,22 @@ fn test_matches() {
     let mut selector = Selector::new();
 
     // class, idの指定がない場合
-    let test0 = matches(&test_element, &selector);
+    let test0 = exist_match_selector(&test_element, &selector);
     assert_eq!(test0, false);
 
     // 一致するclassがある場合
     selector.class = vec![String::from("test")];
-    let test1 = matches(&test_element, &selector);
+    let test1 = exist_match_selector(&test_element, &selector);
     assert_eq!(test1, true);
 
     // 一致するclassと一致しないclassがある場合
     selector.class = vec![String::from("test"), String::from("q")];
-    let test2 = matches(&test_element, &selector);
+    let test2 = exist_match_selector(&test_element, &selector);
     assert_eq!(test2, true);
 
     // idが一致する場合
     selector.class = vec![];
     selector.id = Some(String::from("test_element"));
-    let test3 = matches(&test_element, &selector);
+    let test3 = exist_match_selector(&test_element, &selector);
     assert_eq!(test3, true);
 }

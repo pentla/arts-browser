@@ -2,7 +2,7 @@ use super::entity::DisplayList;
 use crate::css::color::Color;
 use crate::layout::{LayoutBox, Rect};
 use crate::paint::entity::DisplayCommand;
-use crate::paint::utils::{get_color, get_text};
+use crate::paint::utils::{get_color, get_element_data, get_text};
 
 extern crate fontdue;
 
@@ -28,7 +28,15 @@ pub fn render_fonts(list: &mut DisplayList, layout_box: &LayoutBox) {
     // FIXME: 複数文字を扱えるようにする
     let (metrics, bitmap) = generate_font(char, 12.0);
     // FIXME: SolidColorだと単色の色になってしまうので、フォントを表示できるようなDisplayCommandを開発する
-    list.push(DisplayCommand::SolidColor(color, Rect { x: border_box.x, y: border_box.y, width:  }));
+    list.push(DisplayCommand::SolidColor(
+        color,
+        Rect {
+            x: border_box.x,
+            y: border_box.y,
+            width: metrics.width as f32,
+            height: metrics.height as f32,
+        },
+    ));
 }
 
 // テスト用

@@ -89,7 +89,7 @@ impl<'a> LayoutBox<'a> {
     fn layout(&mut self, containing_block: Dimensions) {
         match self.box_type {
             BoxType::BlockNode(_) => self.layout_block(containing_block),
-            BoxType::InlineNode(_) => {}   // todo
+            BoxType::InlineNode(_) => self.layout_inline(containing_block),
             BoxType::AnonymouseBlock => {} // todo
         }
     }
@@ -103,6 +103,11 @@ impl<'a> LayoutBox<'a> {
         self.layout_block_children();
         // heightは子要素の高さに左右されるため、子要素の描画後でないと計算できない
         self.calc_block_height();
+    }
+
+    // FIXME: inline-block独自の位置調整をする
+    fn layout_inline(&mut self, containing_block: Dimensions) {
+        self.layout_block(containing_block);
     }
 
     fn calc_block_width(&mut self, container_block: Dimensions) {
@@ -193,7 +198,6 @@ impl<'a> LayoutBox<'a> {
     }
 
     fn calc_block_position(&mut self, containing_block: Dimensions) {
-        // 参照をとっているかもしれない。怪しい
         let style = self.get_style_node();
         let d = &mut self.dimensions;
 

@@ -12,6 +12,7 @@ mod canvas;
 mod css;
 mod html;
 mod layout;
+mod mock;
 mod paint;
 mod style;
 
