@@ -1,4 +1,4 @@
-use crate::css::ast::{Block, Selector, Specificity, StyleSheet, Value};
+use crate::css::ast::{Block, Selector, Specificity, StyleSheet, Unit, Value};
 use crate::html::ast::{Element, ElementData, ElementType};
 use crate::mock::element::{gen_mock_element, ElementMockOption};
 use crate::mock::stylesheet::{gen_mock_stylesheet, StyleSheetMockOption};
@@ -78,8 +78,6 @@ fn matching_blocks<'a>(elem: &ElementData, style_sheet: &'a StyleSheet) -> Vec<M
 }
 
 fn get_property_map(elem: &ElementData, style_sheet: &StyleSheet) -> PropertyMap {
-    println!("{:?}", elem);
-    println!("{:?}", style_sheet);
     let mut values = HashMap::new();
     let mut blocks = matching_blocks(elem, style_sheet);
 
@@ -110,15 +108,23 @@ pub fn style_tree<'a>(root: &'a Element, style_sheet: &'a StyleSheet) -> StyledN
 }
 
 #[test]
-fn test_specified_values() {
-    let elem_option = ElementMockOption::new();
-    // FIXME: elemにidを付与
+fn test_property_map() {
+    // id: test1, width: 20pxにして、propertyMapが正常に作られているか
+    let mut elem_option = ElementMockOption::new();
+    elem_option.id = String::from("test1");
     let elem = gen_mock_element(elem_option);
-    let stylesheet_option = StyleSheetMockOption::new();
-    // FIXME: stylesheetにpropertyとidを付与
+    let mut stylesheet_option = StyleSheetMockOption::new();
+    stylesheet_option.id = String::from("test1");
+    stylesheet_option.property = String::from("width");
+    stylesheet_option.value = String::from("20px");
     let style_sheet = gen_mock_stylesheet(stylesheet_option);
     let property_map = get_property_map(&elem.element_data, &style_sheet);
-    // FIXME: hashmapの生成を確認
+
+    let width = String::from("width");
+    assert_eq!(
+        *property_map.get(&width).unwrap(),
+        Value::Length(20.0, Unit::Px)
+    );
 }
 
 #[test]
