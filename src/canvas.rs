@@ -1,5 +1,5 @@
 use crate::css::color::Color;
-use crate::layout::{LayoutBox, Rect};
+use crate::layout::layout::{LayoutBox, Rect};
 use crate::paint::{entity::DisplayCommand, paint::build_display_list};
 use std::iter::repeat;
 
