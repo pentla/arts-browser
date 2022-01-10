@@ -1,6 +1,5 @@
-use crate::css::ast::Value;
-use crate::css::color::Color;
-use crate::html::ast::ElementData;
+use crate::css::{Color, Value};
+use crate::html::ElementData;
 use crate::layout::{BoxType, LayoutBox};
 
 pub fn get_color(layout_box: &LayoutBox, name: &str) -> Option<Color> {

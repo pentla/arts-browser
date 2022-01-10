@@ -1,5 +1,5 @@
-use crate::css::ast::{Block, Selector, Specificity, StyleSheet, Unit, Value};
-use crate::html::ast::{Element, ElementData, ElementType};
+use crate::css::{Block, Selector, Specificity, StyleSheet, Unit, Value};
+use crate::html::{Element, ElementData, ElementType};
 use crate::mock::element::{gen_mock_element, ElementMockOption};
 use crate::mock::stylesheet::{gen_mock_stylesheet, StyleSheetMockOption};
 use std::collections::HashMap;

@@ -1,4 +1,4 @@
-use crate::css::ast::{Block, Declaration, Selector, StyleSheet};
+use crate::css::{Block, Declaration, Selector, StyleSheet};
 
 pub struct StyleSheetMockOption {
     pub id: String,

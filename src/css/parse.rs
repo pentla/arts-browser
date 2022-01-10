@@ -6,7 +6,7 @@ use pest::Parser;
 use crate::{
     css::ast::{Block, Declaration, Property, Selector, StyleSheet, Unit, Value},
     css::color::Color,
-    html::ast::{element_type, Element, ElementType},
+    html::{element_type, Element, ElementType},
 };
 
 #[derive(Parser)]

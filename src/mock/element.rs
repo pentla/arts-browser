@@ -1,4 +1,4 @@
-use crate::html::ast::Element;
+use crate::html::Element;
 
 pub struct ElementMockOption {
     pub name: String,

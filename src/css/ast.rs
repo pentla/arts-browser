@@ -1,6 +1,6 @@
 use crate::css::color::Color;
 use crate::css::property_name::{property_to_string, property_type};
-use crate::html::ast::{element_type, ElementType};
+use crate::html::{element_type, ElementType};
 use anyhow::Result;
 
 #[derive(Debug)]
