@@ -6,16 +6,16 @@ impl<'a> LayoutBox<'a> {
     // widthは親コンポーネントから計算可能だが、高さは子要素の合計値に左右される
     pub fn layout_block(&mut self, containing_block: Dimensions) {
         // widthは親のコンポーネントから計算できる
-        self.calc_block_width(containing_block);
+        self.set_block_width(containing_block);
         // boxがどの位置にあるのかを計算する
-        self.calc_block_position(containing_block);
+        self.set_block_position(containing_block);
         // boxの子要素を再起的に計算する
         self.layout_block_children();
         // heightは子要素の高さに左右されるため、子要素の描画後でないと計算できない
-        self.calc_block_height();
+        self.set_block_height();
     }
 
-    pub fn calc_block_width(&mut self, container_block: Dimensions) {
+    pub fn set_block_width(&mut self, container_block: Dimensions) {
         let style = self.get_style_node();
 
         let auto = Value::Keyword("auto".to_string());
@@ -31,7 +31,7 @@ impl<'a> LayoutBox<'a> {
         let padding_left = style.lookup("padding-left", "padding", &zero);
         let padding_right = style.lookup("padding-right", "padding", &zero);
 
-        let total: f32 = [
+        let total_width: f32 = [
             &margin_left,
             &margin_right,
             &border_left,
@@ -43,8 +43,8 @@ impl<'a> LayoutBox<'a> {
         .map(|v| v.to_px())
         .sum();
 
-        // autoで、widthがcontainerの大きさを超える場合、autoに指定されている値を0にする
-        if width != auto && total > container_block.content.width {
+        // widthがcontainerの大きさを超える場合、marginがautoに指定されているなら値を0にする
+        if width != auto && total_width > container_block.content.width {
             if margin_left == auto {
                 margin_left = Value::Length(0.0, Unit::Px);
             }
@@ -54,7 +54,7 @@ impl<'a> LayoutBox<'a> {
         }
 
         // containerの内容がwidthより大きくなってしまった場合の計算
-        let underflow = container_block.content.width - total;
+        let underflow = container_block.content.width - total_width;
 
         match (width == auto, margin_left == auto, margin_right == auto) {
             // overconstrainedの場合
@@ -102,7 +102,7 @@ impl<'a> LayoutBox<'a> {
         d.margin.right = margin_right.to_px();
     }
 
-    pub fn calc_block_position(&mut self, containing_block: Dimensions) {
+    pub fn set_block_position(&mut self, containing_block: Dimensions) {
         let style = self.get_style_node();
         let d = &mut self.dimensions;
 
@@ -134,7 +134,7 @@ impl<'a> LayoutBox<'a> {
         }
     }
 
-    pub fn calc_block_height(&mut self) {
+    pub fn set_block_height(&mut self) {
         if let Some(Value::Length(h, Unit::Px)) = self.get_style_node().value("height") {
             self.dimensions.content.height = h;
         }
