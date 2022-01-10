@@ -1,5 +1,5 @@
 use crate::css::color::Color;
-use crate::layout::layout::Rect;
+use crate::layout::Rect;
 
 pub type DisplayList = Vec<DisplayCommand>;
 

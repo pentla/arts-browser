@@ -1,4 +1,4 @@
-use crate::layout::layout::{LayoutBox, Rect};
+use crate::layout::{LayoutBox, Rect};
 use crate::paint::entity::{DisplayCommand, DisplayList};
 use crate::paint::utils::get_color;
 

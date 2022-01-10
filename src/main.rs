@@ -35,8 +35,8 @@ fn main() {
     let html = read_source(matches.value_of("html"), "examples/test.html");
     let css = read_source(matches.value_of("css"), "examples/test.css");
 
-    let initial_containing_block = layout::layout::Dimensions {
-        content: layout::layout::Rect {
+    let initial_containing_block = layout::Dimensions {
+        content: layout::Rect {
             x: 0.0,
             y: 0.0,
             width: 800.0,
@@ -52,7 +52,7 @@ fn main() {
     // println!("{:?}", stylesheet);
     let style_root = style::style_tree(&root_node, &stylesheet);
     // println!("{:?}", style_root);
-    let layout_root = layout::layout::layout_tree(&style_root, initial_containing_block);
+    let layout_root = layout::layout_tree(&style_root, initial_containing_block);
     // println!("{:?}", layout_root);
     let canvas = canvas::paint(&layout_root, initial_containing_block.content);
     let filename = matches.value_of("output").unwrap_or("output.png");
