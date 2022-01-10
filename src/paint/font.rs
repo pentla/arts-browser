@@ -2,7 +2,7 @@ use super::entity::DisplayList;
 use crate::css::Color;
 use crate::layout::{LayoutBox, Rect};
 use crate::paint::entity::DisplayCommand;
-use crate::paint::utils::{get_color, get_element_data, get_text};
+use crate::paint::utils::{get_color, get_text};
 
 extern crate fontdue;
 
