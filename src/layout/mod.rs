@@ -1,3 +1,4 @@
+mod block;
 mod entity;
 mod layout;
 pub mod layout_box;
