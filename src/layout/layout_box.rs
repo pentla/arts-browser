@@ -42,7 +42,7 @@ impl<'a> LayoutBox<'a> {
         match self.box_type {
             BoxType::BlockNode(_) => self.layout_block(containing_block),
             BoxType::InlineNode(_) => self.layout_inline(containing_block),
-            BoxType::AnonymouseBlock => {} // todo
+            BoxType::AnonymouseBlock => self.layout_anonymous_block(containing_block),
         }
     }
 
