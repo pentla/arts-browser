@@ -24,20 +24,26 @@ pub fn render_fonts(list: &mut DisplayList, layout_box: &LayoutBox) {
     };
     let d = &layout_box.dimensions;
     let border_box = d.border_box();
-    let char = text.chars().next().unwrap();
-    // FIXME: 複数文字を扱えるようにする
-    let (metrics, bitmap) = generate_font(char, 12.0);
-    // SolidColorだと単色の色になってしまうので、DisplayCommand::Fontを利用するフォントを表示できるようなDisplayCommandを開発する
-    list.push(DisplayCommand::Font(
-        color,
-        Rect {
-            x: border_box.x,
-            y: border_box.y,
-            width: metrics.width as f32,
-            height: metrics.height as f32,
-        },
-        bitmap,
-    ))
+
+    // 文字のX座標はfontを描画するたび、その長さずつ右にずれていく
+    let mut text_position_x = border_box.x;
+    let text_position_y = border_box.y;
+    for char in text.chars() {
+        let (metrics, bitmap) = generate_font(char, 12.0);
+        list.push(DisplayCommand::Font(
+            color,
+            Rect {
+                x: text_position_x,
+                y: text_position_y,
+                width: metrics.width as f32,
+                height: metrics.height as f32,
+            },
+            bitmap,
+        ));
+        // FIXME: canvas.rsのDisplayCommandで3倍しているため、xの位置も同じように3倍している。
+        // fontがなぜ3倍されているのか突き止めたほうがよい。
+        text_position_x += (metrics.width * 3) as f32;
+    }
 }
 
 // テスト用
