@@ -1,111 +1,21 @@
-use crate::css::ast::{Unit, Value};
-use crate::style::{Display, StyledNode};
-use std::default::Default;
-
-#[derive(Debug, Default, Clone, Copy)]
-pub struct Dimensions {
-    pub content: Rect,
-    pub padding: EdgeSizes,
-    pub margin: EdgeSizes,
-    pub border: EdgeSizes,
-}
-
-impl Dimensions {
-    pub fn padding_box(self) -> Rect {
-        self.content.expanded_by(self.padding)
-    }
-    pub fn border_box(self) -> Rect {
-        self.padding_box().expanded_by(self.border)
-    }
-    pub fn margin_box(self) -> Rect {
-        self.border_box().expanded_by(self.margin)
-    }
-}
-
-#[derive(Debug, Default, Clone, Copy)]
-pub struct Rect {
-    pub x: f32,
-    pub y: f32,
-    pub width: f32,
-    pub height: f32,
-}
-
-impl Rect {
-    fn expanded_by(self, edge: EdgeSizes) -> Rect {
-        Rect {
-            x: self.x - edge.left,
-            y: self.y - edge.top,
-            width: self.width + edge.left + edge.right,
-            height: self.height + edge.top + edge.bottom,
-        }
-    }
-}
-
-#[derive(Debug, Default, Copy, Clone)]
-pub struct EdgeSizes {
-    pub left: f32,
-    pub right: f32,
-    pub top: f32,
-    pub bottom: f32,
-}
-
-#[derive(Debug)]
-pub struct LayoutBox<'a> {
-    pub dimensions: Dimensions,
-    pub box_type: BoxType<'a>,
-    pub children: Vec<LayoutBox<'a>>,
-}
+use crate::css::{Unit, Value};
+use crate::layout::entity::Dimensions;
+use crate::layout::layout_box::LayoutBox;
 
 impl<'a> LayoutBox<'a> {
-    fn new(box_type: BoxType) -> LayoutBox {
-        LayoutBox {
-            box_type,
-            dimensions: Default::default(),
-            children: vec![],
-        }
-    }
-    fn get_inline_container(&mut self) -> &mut LayoutBox<'a> {
-        match self.box_type {
-            BoxType::InlineNode(_) | BoxType::AnonymouseBlock => self,
-            BoxType::BlockNode(_) => {
-                match self.children.last() {
-                    Some(&LayoutBox {
-                        box_type: BoxType::AnonymouseBlock,
-                        ..
-                    }) => {}
-                    _ => self.children.push(LayoutBox::new(BoxType::AnonymouseBlock)),
-                }
-                self.children.last_mut().unwrap()
-            }
-        }
-    }
-    fn get_style_node(&self) -> &'a StyledNode<'a> {
-        match self.box_type {
-            BoxType::BlockNode(style_node) => style_node,
-            BoxType::InlineNode(style_node) => style_node,
-            BoxType::AnonymouseBlock => panic!("Anonymous block box has no style node"),
-        }
-    }
-    fn layout(&mut self, containing_block: Dimensions) {
-        match self.box_type {
-            BoxType::BlockNode(_) => self.layout_block(containing_block),
-            BoxType::InlineNode(_) => {}   // todo
-            BoxType::AnonymouseBlock => {} // todo
-        }
-    }
     // widthは親コンポーネントから計算可能だが、高さは子要素の合計値に左右される
-    fn layout_block(&mut self, containing_block: Dimensions) {
+    pub fn layout_block(&mut self, containing_block: Dimensions) {
         // widthは親のコンポーネントから計算できる
-        self.calc_block_width(containing_block);
+        self.set_block_width(containing_block);
         // boxがどの位置にあるのかを計算する
-        self.calc_block_position(containing_block);
+        self.set_block_position(containing_block);
         // boxの子要素を再起的に計算する
         self.layout_block_children();
         // heightは子要素の高さに左右されるため、子要素の描画後でないと計算できない
-        self.calc_block_height();
+        self.set_block_height();
     }
 
-    fn calc_block_width(&mut self, container_block: Dimensions) {
+    pub fn set_block_width(&mut self, container_block: Dimensions) {
         let style = self.get_style_node();
 
         let auto = Value::Keyword("auto".to_string());
@@ -121,7 +31,7 @@ impl<'a> LayoutBox<'a> {
         let padding_left = style.lookup("padding-left", "padding", &zero);
         let padding_right = style.lookup("padding-right", "padding", &zero);
 
-        let total: f32 = [
+        let total_width: f32 = [
             &margin_left,
             &margin_right,
             &border_left,
@@ -133,8 +43,8 @@ impl<'a> LayoutBox<'a> {
         .map(|v| v.to_px())
         .sum();
 
-        // autoで、widthがcontainerの大きさを超える場合、autoに指定されている値を0にする
-        if width != auto && total > container_block.content.width {
+        // widthがcontainerの大きさを超える場合、marginがautoに指定されているなら値を0にする
+        if width != auto && total_width > container_block.content.width {
             if margin_left == auto {
                 margin_left = Value::Length(0.0, Unit::Px);
             }
@@ -144,7 +54,7 @@ impl<'a> LayoutBox<'a> {
         }
 
         // containerの内容がwidthより大きくなってしまった場合の計算
-        let underflow = container_block.content.width - total;
+        let underflow = container_block.content.width - total_width;
 
         match (width == auto, margin_left == auto, margin_right == auto) {
             // overconstrainedの場合
@@ -192,8 +102,7 @@ impl<'a> LayoutBox<'a> {
         d.margin.right = margin_right.to_px();
     }
 
-    fn calc_block_position(&mut self, containing_block: Dimensions) {
-        // 参照をとっているかもしれない。怪しい
+    pub fn set_block_position(&mut self, containing_block: Dimensions) {
         let style = self.get_style_node();
         let d = &mut self.dimensions;
 
@@ -217,7 +126,7 @@ impl<'a> LayoutBox<'a> {
             + d.padding.top;
     }
 
-    fn layout_block_children(&mut self) {
+    pub fn layout_block_children(&mut self) {
         let d = &mut self.dimensions;
         for child in &mut self.children {
             child.layout(*d);
@@ -225,43 +134,9 @@ impl<'a> LayoutBox<'a> {
         }
     }
 
-    fn calc_block_height(&mut self) {
+    pub fn set_block_height(&mut self) {
         if let Some(Value::Length(h, Unit::Px)) = self.get_style_node().value("height") {
             self.dimensions.content.height = h;
         }
     }
-}
-
-#[derive(Debug)]
-pub enum BoxType<'a> {
-    BlockNode(&'a StyledNode<'a>),
-    InlineNode(&'a StyledNode<'a>),
-    AnonymouseBlock,
-}
-
-pub fn layout_tree<'a>(node: &'a StyledNode, mut containing_block: Dimensions) -> LayoutBox<'a> {
-    containing_block.content.height = 0.0;
-    let mut root_box = build_layout_tree(node);
-    root_box.layout(containing_block);
-    root_box
-}
-
-fn build_layout_tree<'a>(style_node: &'a StyledNode) -> LayoutBox<'a> {
-    let mut root = LayoutBox::new(match style_node.display() {
-        Display::Block => BoxType::BlockNode(style_node),
-        Display::Inline => BoxType::InlineNode(style_node),
-        Display::None => panic!("Root node has display: none;"),
-    });
-
-    for child in &style_node.children {
-        match child.display() {
-            Display::Block => root.children.push(build_layout_tree(child)),
-            Display::Inline => root
-                .get_inline_container()
-                .children
-                .push(build_layout_tree(child)),
-            Display::None => {}
-        }
-    }
-    return root;
 }

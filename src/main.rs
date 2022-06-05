@@ -12,6 +12,7 @@ mod canvas;
 mod css;
 mod html;
 mod layout;
+mod mock;
 mod paint;
 mod style;
 
@@ -46,8 +47,8 @@ fn main() {
         margin: Default::default(),
     };
 
-    let root_node = html::parse::parse_nodes(html.as_str());
-    let stylesheet = css::parse::parse_css(css.as_str());
+    let root_node = html::parse_nodes(html.as_str());
+    let stylesheet = css::parse_css(css.as_str());
     // println!("{:?}", stylesheet);
     let style_root = style::style_tree(&root_node, &stylesheet);
     // println!("{:?}", style_root);
