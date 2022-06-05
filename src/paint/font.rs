@@ -27,8 +27,8 @@ pub fn render_fonts(list: &mut DisplayList, layout_box: &LayoutBox) {
     let char = text.chars().next().unwrap();
     // FIXME: 複数文字を扱えるようにする
     let (metrics, bitmap) = generate_font(char, 12.0);
-    // FIXME: SolidColorだと単色の色になってしまうので、フォントを表示できるようなDisplayCommandを開発する
-    list.push(DisplayCommand::SolidColor(
+    // SolidColorだと単色の色になってしまうので、DisplayCommand::Fontを利用するフォントを表示できるようなDisplayCommandを開発する
+    list.push(DisplayCommand::Font(
         color,
         Rect {
             x: border_box.x,
@@ -36,11 +36,14 @@ pub fn render_fonts(list: &mut DisplayList, layout_box: &LayoutBox) {
             width: metrics.width as f32,
             height: metrics.height as f32,
         },
-    ));
+        bitmap,
+    ))
 }
 
 // テスト用
 fn _print_font(metrics: fontdue::Metrics, bitmap: Vec<u8>) {
+    // Metrics { xmin: 0, ymin: -4, width: 9, height: 14, advance_width: 9.537598, advance_height: 0.0, bounds: OutlineBounds { xmin: 0.796875, ymin: -3.5361328, width: 7.586914, height: 12.683594 } }
+    println!("{:?}", metrics);
     for y in 0..metrics.height {
         for x in (0..metrics.width * 3).step_by(3) {
             let char_r = bitmap[x + y * metrics.width * 3];

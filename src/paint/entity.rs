@@ -6,4 +6,5 @@ pub type DisplayList = Vec<DisplayCommand>;
 #[derive(Debug)]
 pub enum DisplayCommand {
     SolidColor(Color, Rect),
+    Font(Color, Rect, Vec<u8>),
 }

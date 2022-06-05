@@ -38,6 +38,9 @@ impl Color {
             a: 1,
         })
     }
+    pub fn from_rgba(r: u8, g: u8, b: u8, a: u8) -> Self {
+        Color { r, g, b, a }
+    }
 
     fn default_color_name(name: &str) -> Option<Color> {
         match name {

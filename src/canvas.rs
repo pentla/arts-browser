@@ -27,8 +27,9 @@ impl Canvas {
     fn paint_item(&mut self, item: &DisplayCommand) {
         match item {
             &DisplayCommand::SolidColor(color, rect) => {
+                // clamp: 数値の最小値、最大値を指定するとその範囲内に収めてくれる
                 let x0 = rect.x.clamp(0.0, self.width as f32) as usize;
-                let y0 = rect.x.clamp(0.0, self.height as f32) as usize;
+                let y0 = rect.y.clamp(0.0, self.height as f32) as usize;
                 let x1 = (rect.x + rect.width).clamp(0.0, self.width as f32) as usize;
                 let y1 = (rect.y + rect.height).clamp(0.0, self.height as f32) as usize;
 
@@ -36,6 +37,20 @@ impl Canvas {
                     for x in x0..x1 {
                         self.pixels[y * self.width + x] = color;
                     }
+                }
+            }
+            DisplayCommand::Font(color, metrics, bitmap) => {
+                println!("{:?}", metrics);
+                for y in 0..metrics.height as usize {
+                    for x in (0..metrics.width as usize * 3) {
+                        let char_r = bitmap[x + y * metrics.width as usize * 3];
+                        let char_g = bitmap[x + y * metrics.width as usize * 3];
+                        let char_b = bitmap[x + y * metrics.width as usize * 3];
+                        print!("\x1B[48;2;{};{};{}m   ", char_r, char_g, char_b);
+                        self.pixels[y * self.width + x] =
+                            Color::from_rgba(char_r, char_g, char_b, 255);
+                    }
+                    println!("\x1B[0m");
                 }
             }
         }
