@@ -40,17 +40,25 @@ impl Canvas {
                 }
             }
             DisplayCommand::Font(color, metrics, bitmap) => {
-                println!("{:?}", metrics);
                 for y in 0..metrics.height as usize {
-                    for x in (0..metrics.width as usize * 3) {
+                    for x in 0..metrics.width as usize * 3 {
                         let char_r = bitmap[x + y * metrics.width as usize * 3];
                         let char_g = bitmap[x + y * metrics.width as usize * 3];
                         let char_b = bitmap[x + y * metrics.width as usize * 3];
-                        print!("\x1B[48;2;{};{};{}m   ", char_r, char_g, char_b);
-                        self.pixels[y * self.width + x] =
-                            Color::from_rgba(char_r, char_g, char_b, 255);
+                        // fontデバッグ用
+                        // print!("\x1B[48;2;{};{};{}m   ", char_r, char_g, char_b);
+
+                        /*
+                           pixelのindex =
+                           {y(縦) + metrics.y(縦のbounding box) * width(行数分y方向にずらす)}
+                           + {x(横) + metrics.x(横のbounding box)}
+                        */
+                        let pixel_index =
+                            (y + metrics.y as usize) * self.width + (x + metrics.x as usize);
+                        self.pixels[pixel_index] = Color::from_rgba(char_r, char_g, char_b, 255);
                     }
-                    println!("\x1B[0m");
+                    // fontデバッグ用
+                    // println!("\x1B[0m");
                 }
             }
         }
