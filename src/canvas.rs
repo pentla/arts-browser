@@ -41,13 +41,8 @@ impl Canvas {
             }
             DisplayCommand::Font(color, metrics, bitmap) => {
                 for y in 0..metrics.height as usize {
-                    // FIXME: この3倍がなぜあるのか判明していないため、本当はない方が良い。
-                    // https://github.com/mooman219/fontdue/blob/6f0cea6233bf37fb05ca3ea0c57de65821068ef1/examples/raster-print.rs#L32
-
-                    for x in 0..metrics.width as usize * 3 {
-                        let char_r = bitmap[x + y * metrics.width as usize * 3];
-                        let char_g = bitmap[x + y * metrics.width as usize * 3];
-                        let char_b = bitmap[x + y * metrics.width as usize * 3];
+                    for x in 0..metrics.width as usize {
+                        let char = bitmap[x + y * metrics.width as usize];
                         // fontデバッグ用
                         // print!("\x1B[48;2;{};{};{}m   ", char_r, char_g, char_b);
 
@@ -58,7 +53,7 @@ impl Canvas {
                         */
                         let pixel_index =
                             (y + metrics.y as usize) * self.width + (x + metrics.x as usize);
-                        self.pixels[pixel_index] = Color::from_rgba(char_r, char_g, char_b, 255);
+                        self.pixels[pixel_index] = Color::from_rgba(char, char, char, 255);
                     }
                     // fontデバッグ用
                     // println!("\x1B[0m");
