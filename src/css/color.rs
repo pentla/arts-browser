@@ -42,6 +42,20 @@ impl Color {
         Color { r, g, b, a }
     }
 
+    /// 他のColorを指定することで、その色とのブレンドを行う.
+    /// alpha: どの程度文字の色と背景色が混ざるかを決定。 0~255の値を指定
+    pub fn blend(&self, blended_color: Color, alpha: u8) -> Color {
+        let alpha = alpha as f32 / 255.0;
+        // 文字のアルファ値の補数を表し、背景色がどの程度透明であるか
+        let inv_alpha = 1.0 - alpha;
+        Color {
+            r: (self.r as f32 * alpha + blended_color.r as f32 * inv_alpha).ceil() as u8,
+            g: (self.g as f32 * alpha + blended_color.g as f32 * inv_alpha).ceil() as u8,
+            b: (self.b as f32 * alpha + blended_color.b as f32 * inv_alpha).ceil() as u8,
+            a: 255,
+        }
+    }
+
     fn default_color_name(name: &str) -> Option<Color> {
         match name {
             "black" => Some(Color {
@@ -102,11 +116,37 @@ fn remove_first_char(input: &str) -> &str {
     chars.as_str()
 }
 
-#[test]
-fn color_test() {
-    let test1 = Color::new("#dedede").unwrap();
-    assert_eq!(test1.r, 222);
-    assert_eq!(test1.g, 222);
-    assert_eq!(test1.b, 222);
-    assert_eq!(test1.a, 1);
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn color_test() {
+        let test1 = Color::new("#dedede").unwrap();
+        assert_eq!(test1.r, 222);
+        assert_eq!(test1.g, 222);
+        assert_eq!(test1.b, 222);
+        assert_eq!(test1.a, 1);
+    }
+    #[test]
+    fn test_blend() {
+        // 完全に透明な文字の場合、背景色がそのまま返される
+        let char_color1 = Color::from_rgba(255, 0, 0, 255); // Red
+        let bg_color1 = Color::from_rgba(0, 255, 0, 255); // Green
+        let blended_color1 = char_color1.blend(bg_color1, 0);
+        assert_eq!(bg_color1, blended_color1);
+
+        // 完全に不透明な文字の場合、文字色がそのまま返される
+        let char_color2 = Color::from_rgba(255, 0, 0, 255); // Red
+        let bg_color2 = Color::from_rgba(0, 255, 0, 255); // Green
+        let blended_color2 = char_color2.blend(bg_color2, 255);
+        assert_eq!(char_color2, blended_color2);
+
+        // 他の色と透明度の組み合わせでもテスト
+        let char_color4 = Color::from_rgba(0, 0, 255, 255); // Blue
+        let bg_color4 = Color::from_rgba(255, 255, 0, 255); // Yellow
+        let blended_color4 = char_color4.blend(bg_color4, 64);
+        let expected_color4 = Color::from_rgba(191, 191, 64, 255); // Blended: Light Gray
+        assert_eq!(expected_color4, blended_color4);
+    }
 }
