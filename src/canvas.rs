@@ -8,36 +8,20 @@ pub struct Canvas {
     pub pixels: Vec<Color>,
     pub width: usize,
     pub height: usize,
-    pub scale: f32,
-}
-
-pub struct CanvasOption {
-    pub scale: f32,
-}
-
-impl CanvasOption {
-    pub fn default() -> Self {
-        CanvasOption { scale: 1.0 }
-    }
 }
 
 impl Canvas {
-    fn new(width: usize, height: usize, option: CanvasOption) -> Canvas {
+    fn new(width: usize, height: usize) -> Canvas {
         let white = Color {
             r: 255,
             g: 255,
             b: 255,
             a: 255,
         };
-        let mut scale = option.scale;
-        if option.scale <= 0.0 {
-            scale = 1.0
-        }
         return Canvas {
             pixels: repeat(white).take(width * height).collect(),
             width,
             height,
-            scale,
         };
     }
     fn paint_item(&mut self, item: &DisplayCommand) {
@@ -97,11 +81,7 @@ impl Canvas {
 pub fn paint(layout_root: &LayoutBox, bounds: Rect) -> Canvas {
     let display_list = build_display_list(layout_root);
     // println!("{:?}", display_list);
-    let mut canvas = Canvas::new(
-        bounds.width as usize,
-        bounds.height as usize,
-        CanvasOption::default(),
-    );
+    let mut canvas = Canvas::new(bounds.width as usize, bounds.height as usize);
     for item in display_list {
         canvas.paint_item(&item);
     }
