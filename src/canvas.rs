@@ -55,35 +55,7 @@ impl Canvas {
                     }
                 }
             }
-            DisplayCommand::Font(color, metrics, bitmap) => {
-                for y in 0..metrics.height as usize {
-                    for x in 0..metrics.width as usize {
-                        let char_r = bitmap[x + y * metrics.width as usize];
-                        let char_g = bitmap[x + y * metrics.width as usize];
-                        let char_b = bitmap[x + y * metrics.width as usize];
-                        let char_a = char_r.max(char_g).max(char_b);
-                        // fontデバッグ用
-                        // print!("\x1B[48;2;{};{};{}m   ", char_r, char_g, char_b);
 
-                        /*
-                           pixelのindex =
-                           {y(縦) + metrics.y(縦のbounding box) * width(行数分y方向にずらす)}
-                           + {x(横) + metrics.x(横のbounding box)}
-                        */
-                        let pixel_index =
-                            (y + metrics.y as usize) * self.width + (x + metrics.x as usize);
-
-                        let font_color = Color::from_rgba(char_r, char_g, char_b, char_a);
-                        let background_color = self.pixels[pixel_index];
-
-                        // fontの色と背景色を混ぜた値を背景色として設定する
-                        let blended_color = font_color.blend(background_color, char_a);
-                        self.pixels[pixel_index] = blended_color;
-                    }
-                    // fontデバッグ用
-                    // println!("\x1B[0m");
-                }
-            }
             DisplayCommand::FontSubpixel(color, metrics, bitmap) => {
                 for y in 0..metrics.height as usize {
                     // x: 0, 3, 6, 9.....になる
@@ -96,13 +68,14 @@ impl Canvas {
                         // fontデバッグ用
                         // print!("\x1B[48;2;{};{};{}m   ", char_r, char_g, char_b);
 
+                        // subpixelしているため、実際のx座標は3倍になっている
+                        x = x / 3;
+
                         /*
                            pixelのindex =
                            {y(縦) + metrics.y(縦のbounding box) * width(行数分y方向にずらす)}
                            + {x(横) + metrics.x(横のbounding box)}
                         */
-
-                        x = x / 3;
                         let pixel_index =
                             (y + metrics.y as usize) * self.width + (x + metrics.x as usize);
 

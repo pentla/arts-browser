@@ -16,6 +16,7 @@ impl<'a> LayoutBox<'a> {
             children: vec![],
         }
     }
+    //
     pub fn get_inline_container(&mut self) -> &mut LayoutBox<'a> {
         match self.box_type {
             BoxType::InlineNode(_) | BoxType::AnonymouseBlock => self,
@@ -38,6 +39,7 @@ impl<'a> LayoutBox<'a> {
             BoxType::AnonymouseBlock => panic!("Anonymous block box has no style node"),
         }
     }
+    // boxの種類に応じてレンダリングの処理を振り分ける
     pub fn layout(&mut self, containing_block: Dimensions) {
         match self.box_type {
             BoxType::BlockNode(_) => self.layout_block(containing_block),
