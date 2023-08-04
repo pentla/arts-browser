@@ -9,11 +9,11 @@ extern crate fontdue;
 fn generate_font(charactor: char, size: f32) -> (fontdue::Metrics, Vec<u8>) {
     let font_file = include_bytes!("../../resources/Roboto-Regular.ttf") as &[u8];
     let font = fontdue::Font::from_bytes(font_file, fontdue::FontSettings::default()).unwrap();
-    let (metrics, bitmap) = font.rasterize(charactor, size);
+    let (metrics, bitmap) = font.rasterize_subpixel(charactor, size * 2.0);
     (metrics, bitmap)
 }
 
-pub fn render_fonts(list: &mut DisplayList, layout_box: &LayoutBox) {
+pub fn render_font_subpixel(list: &mut DisplayList, layout_box: &LayoutBox) {
     let text = get_text(layout_box);
     if text == "" {
         return;
@@ -30,7 +30,7 @@ pub fn render_fonts(list: &mut DisplayList, layout_box: &LayoutBox) {
     let text_position_y = border_box.y;
     for char in text.chars() {
         let (metrics, bitmap) = generate_font(char, 12.0);
-        list.push(DisplayCommand::Font(
+        list.push(DisplayCommand::FontSubpixel(
             color,
             Rect {
                 x: text_position_x,

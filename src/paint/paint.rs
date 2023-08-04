@@ -2,7 +2,7 @@ use crate::layout::LayoutBox;
 use crate::paint::background::render_background;
 use crate::paint::border::render_borders;
 use crate::paint::entity::DisplayList;
-use crate::paint::font::render_fonts;
+use crate::paint::font::render_font_subpixel;
 
 pub fn build_display_list(layout_root: &LayoutBox) -> DisplayList {
     let mut list = Vec::new();
@@ -13,7 +13,7 @@ pub fn build_display_list(layout_root: &LayoutBox) -> DisplayList {
 fn render_layout_box(list: &mut DisplayList, layout_box: &LayoutBox) {
     render_background(list, layout_box);
     render_borders(list, layout_box);
-    render_fonts(list, layout_box);
+    render_font_subpixel(list, layout_box);
 
     for child in &layout_box.children {
         render_layout_box(list, child);
