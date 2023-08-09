@@ -11,7 +11,7 @@ pub struct Canvas {
 }
 
 impl Canvas {
-    fn new(width: usize, height: usize) -> Canvas {
+    pub fn new(width: usize, height: usize) -> Canvas {
         let white = Color {
             r: 255,
             g: 255,
@@ -24,7 +24,7 @@ impl Canvas {
             height,
         };
     }
-    fn paint_item(&mut self, item: &DisplayCommand) {
+    pub fn paint_item(&mut self, item: &DisplayCommand) {
         match item {
             &DisplayCommand::SolidColor(color, rect) => {
                 // clamp: 数値の最小値、最大値を指定するとその範囲内に収めてくれる
@@ -44,7 +44,6 @@ impl Canvas {
                 for y in 0..metrics.height as usize {
                     // x: 0, 3, 6, 9.....になる
                     for mut x in (0..(metrics.width as usize * 3)).step_by(3) {
-                        println!("x: {}, y: {}", x, y);
                         let char_r = bitmap[x + y * metrics.width as usize * 3];
                         let char_g = bitmap[x + 1 + y * metrics.width as usize * 3];
                         let char_b = bitmap[x + 2 + y * metrics.width as usize * 3];
@@ -76,14 +75,4 @@ impl Canvas {
             }
         }
     }
-}
-
-pub fn paint(layout_root: &LayoutBox, bounds: Rect) -> Canvas {
-    let display_list = build_display_list(layout_root);
-    // println!("{:?}", display_list);
-    let mut canvas = Canvas::new(bounds.width as usize, bounds.height as usize);
-    for item in display_list {
-        canvas.paint_item(&item);
-    }
-    canvas
 }

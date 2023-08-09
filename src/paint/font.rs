@@ -1,17 +1,12 @@
 use super::entity::DisplayList;
 use crate::css::Color;
+use crate::font::rasterize::{generate_font, init_fontdue};
+use crate::font::FontMetrics;
 use crate::layout::{LayoutBox, Rect};
 use crate::paint::entity::DisplayCommand;
 use crate::paint::utils::{get_color, get_text};
 
 extern crate fontdue;
-
-fn generate_font(charactor: char, size: f32) -> (fontdue::Metrics, Vec<u8>) {
-    let font_file = include_bytes!("../../resources/Roboto-Regular.ttf") as &[u8];
-    let font = fontdue::Font::from_bytes(font_file, fontdue::FontSettings::default()).unwrap();
-    let (metrics, bitmap) = font.rasterize_subpixel(charactor, size * 2.0);
-    (metrics, bitmap)
-}
 
 pub fn render_font_subpixel(list: &mut DisplayList, layout_box: &LayoutBox) {
     let text = get_text(layout_box);
@@ -25,41 +20,25 @@ pub fn render_font_subpixel(list: &mut DisplayList, layout_box: &LayoutBox) {
     let d = &layout_box.dimensions;
     let border_box = d.border_box();
 
+    let font_cli = init_fontdue();
+
     // 文字のX座標はfontを描画するたび、その長さずつ右にずれていく
     let mut text_position_x = border_box.x;
     let text_position_y = border_box.y;
     for char in text.chars() {
-        let (metrics, bitmap) = generate_font(char, 12.0);
+        let (metrics, bitmap) = generate_font(&font_cli, char, 12.0);
         list.push(DisplayCommand::FontSubpixel(
             color,
-            Rect {
+            FontMetrics {
                 x: text_position_x,
                 y: text_position_y,
-                width: metrics.width as f32,
-                height: metrics.height as f32,
+                xmin: metrics.xmin,
+                ymin: metrics.ymin,
+                width: metrics.width,
+                height: metrics.height,
             },
             bitmap,
         ));
         text_position_x += metrics.width as f32;
     }
-}
-
-// テスト用
-fn _print_font(metrics: fontdue::Metrics, bitmap: Vec<u8>) {
-    println!("{:?}", metrics);
-    for y in 0..metrics.height {
-        for x in 0..metrics.width {
-            let char_r = bitmap[x + y * metrics.width];
-            let char_g = bitmap[x + y * metrics.width];
-            let char_b = bitmap[x + y * metrics.width];
-            print!("\x1B[48;2;{};{};{}m   ", char_r, char_g, char_b);
-        }
-        println!("\x1B[0m");
-    }
-}
-
-#[test]
-fn test_font() {
-    let (metrics, bitmap) = generate_font('g', 17.0);
-    _print_font(metrics, bitmap);
 }
