@@ -1,6 +1,6 @@
 use crate::css::Color;
-use crate::layout::{LayoutBox, Rect};
-use crate::paint::{build_display_list, DisplayCommand};
+use crate::font::FontMetrics;
+use crate::paint::DisplayCommand;
 use std::iter::repeat;
 
 #[derive(Debug)]
@@ -11,7 +11,7 @@ pub struct Canvas {
 }
 
 impl Canvas {
-    fn new(width: usize, height: usize) -> Canvas {
+    pub fn new(width: usize, height: usize) -> Canvas {
         let white = Color {
             r: 255,
             g: 255,
@@ -24,7 +24,7 @@ impl Canvas {
             height,
         };
     }
-    fn paint_item(&mut self, item: &DisplayCommand) {
+    pub fn paint_item(&mut self, item: &DisplayCommand) {
         match item {
             &DisplayCommand::SolidColor(color, rect) => {
                 // clamp: 数値の最小値、最大値を指定するとその範囲内に収めてくれる
@@ -39,23 +39,22 @@ impl Canvas {
                     }
                 }
             }
-            DisplayCommand::Font(color, metrics, bitmap) => {
+
+            DisplayCommand::FontSubpixel(color, metrics, bitmap) => {
                 for y in 0..metrics.height as usize {
-                    for x in 0..metrics.width as usize {
-                        let char_r = bitmap[x + y * metrics.width as usize];
-                        let char_g = bitmap[x + y * metrics.width as usize];
-                        let char_b = bitmap[x + y * metrics.width as usize];
+                    // x: 0, 3, 6, 9.....になる
+                    for mut x in (0..(metrics.width as usize * 3)).step_by(3) {
+                        let char_r = bitmap[x + y * metrics.width as usize * 3];
+                        let char_g = bitmap[x + 1 + y * metrics.width as usize * 3];
+                        let char_b = bitmap[x + 2 + y * metrics.width as usize * 3];
                         let char_a = char_r.max(char_g).max(char_b);
                         // fontデバッグ用
                         // print!("\x1B[48;2;{};{};{}m   ", char_r, char_g, char_b);
 
-                        /*
-                           pixelのindex =
-                           {y(縦) + metrics.y(縦のbounding box) * width(行数分y方向にずらす)}
-                           + {x(横) + metrics.x(横のbounding box)}
-                        */
-                        let pixel_index =
-                            (y + metrics.y as usize) * self.width + (x + metrics.x as usize);
+                        // subpixelしているため、実際のx座標は3倍になっている
+                        x = x / 3;
+
+                        let pixel_index = get_font_pixel_index(x, y, self.width, metrics);
 
                         let font_color = Color::from_rgba(char_r, char_g, char_b, char_a);
                         let background_color = self.pixels[pixel_index];
@@ -72,12 +71,14 @@ impl Canvas {
     }
 }
 
-pub fn paint(layout_root: &LayoutBox, bounds: Rect) -> Canvas {
-    let display_list = build_display_list(layout_root);
-    // println!("{:?}", display_list);
-    let mut canvas = Canvas::new(bounds.width as usize, bounds.height as usize);
-    for item in display_list {
-        canvas.paint_item(&item);
-    }
-    canvas
+/*
+   pixelのindex =
+   {y(縦) + metrics.y(縦のbounding box) * width(行数分y方向にずらす)}
+   + {x(横) + metrics.x(横のbounding box)}
+*/
+pub fn get_font_pixel_index(x: usize, y: usize, width: usize, metrics: &FontMetrics) -> usize {
+    // 参照: https://github.com/mooman219/fontdue/issues/10#issuecomment-603459057
+    let x_index: i32 = (x as f32 + metrics.x) as i32;
+    let y_index: i32 = (y as f32 + metrics.y - metrics.height as f32 - metrics.ymin as f32) as i32;
+    y_index as usize * width + x_index as usize
 }

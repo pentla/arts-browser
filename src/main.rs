@@ -8,8 +8,8 @@ use std::fs::File;
 use std::io::prelude::*;
 use std::path::Path;
 
-mod canvas;
 mod css;
+mod font;
 mod html;
 mod layout;
 mod mock;
@@ -54,7 +54,7 @@ fn main() {
     // println!("{:?}", style_root);
     let layout_root = layout::layout_tree(&style_root, initial_containing_block);
     // println!("{:?}", layout_root);
-    let canvas = canvas::paint(&layout_root, initial_containing_block.content);
+    let canvas = paint::paint(&layout_root, initial_containing_block.content);
     let filename = matches.value_of("output").unwrap_or("output.png");
     let (w, h) = (canvas.width as u32, canvas.height as u32);
     let img = ImageBuffer::from_fn(w, h, move |x, y| {

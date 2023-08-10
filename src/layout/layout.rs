@@ -1,6 +1,7 @@
 use crate::layout::{BoxType, Dimensions, LayoutBox};
 use crate::style::{Display, StyledNode};
 
+// main関数から呼ばれるトップクラスの関数
 pub fn layout_tree<'a>(node: &'a StyledNode, mut containing_block: Dimensions) -> LayoutBox<'a> {
     containing_block.content.height = 0.0;
     let mut root_box = build_layout_tree(node);
