@@ -1,6 +1,6 @@
 use crate::css::Color;
-use crate::layout::{LayoutBox, Rect};
-use crate::paint::{build_display_list, DisplayCommand};
+use crate::font::FontMetrics;
+use crate::paint::DisplayCommand;
 use std::iter::repeat;
 
 #[derive(Debug)]
@@ -54,13 +54,7 @@ impl Canvas {
                         // subpixelしているため、実際のx座標は3倍になっている
                         x = x / 3;
 
-                        /*
-                           pixelのindex =
-                           {y(縦) + metrics.y(縦のbounding box) * width(行数分y方向にずらす)}
-                           + {x(横) + metrics.x(横のbounding box)}
-                        */
-                        let pixel_index =
-                            (y + metrics.y as usize) * self.width + (x + metrics.x as usize);
+                        let pixel_index = get_font_pixel_index(x, y, self.width, metrics);
 
                         let font_color = Color::from_rgba(char_r, char_g, char_b, char_a);
                         let background_color = self.pixels[pixel_index];
@@ -75,4 +69,16 @@ impl Canvas {
             }
         }
     }
+}
+
+/*
+   pixelのindex =
+   {y(縦) + metrics.y(縦のbounding box) * width(行数分y方向にずらす)}
+   + {x(横) + metrics.x(横のbounding box)}
+*/
+pub fn get_font_pixel_index(x: usize, y: usize, width: usize, metrics: &FontMetrics) -> usize {
+    // 参照: https://github.com/mooman219/fontdue/issues/10#issuecomment-603459057
+    let x_index: i32 = (x as f32 + metrics.x) as i32;
+    let y_index: i32 = (y as f32 + metrics.y - metrics.height as f32 - metrics.ymin as f32) as i32;
+    y_index as usize * width + x_index as usize
 }

@@ -9,6 +9,6 @@ pub fn generate_font(
     charactor: char,
     size: f32,
 ) -> (fontdue::Metrics, Vec<u8>) {
-    let (metrics, bitmap) = font_cli.rasterize_subpixel(charactor, size * 2.0);
+    let (metrics, bitmap) = font_cli.rasterize_subpixel(charactor, size);
     (metrics, bitmap)
 }
