@@ -1,4 +1,25 @@
-use crate::css::ast::Property;
+#[derive(Debug, PartialEq, Eq, Copy, Clone)]
+pub enum Property {
+    Color,
+    BackgroundColor,
+    Margin,
+    MarginTop,
+    MarginLeft,
+    MarginRight,
+    MarginBottom,
+    Padding,
+    Width,
+    Height,
+    Display,
+    FontSize,
+    Undefined,
+}
+
+impl Property {
+    pub fn to_string(self: &Self) -> String {
+        property_to_string(*self)
+    }
+}
 
 pub fn property_type(input: &str) -> Property {
     match input {

@@ -4,8 +4,9 @@ use pest::iterators::Pair;
 use pest::Parser;
 
 use crate::{
-    css::ast::{Block, Declaration, Property, Selector, StyleSheet, Unit, Value},
+    css::ast::{Block, Declaration, Selector, StyleSheet, Unit, Value},
     css::color::Color,
+    css::property::Property,
     html::{element_type, Element, ElementType},
 };
 

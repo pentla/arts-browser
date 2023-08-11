@@ -1,5 +1,5 @@
 use crate::css::color::Color;
-use crate::css::property_name::{property_to_string, property_type};
+use crate::css::property::{property_type, Property};
 use crate::html::{element_type, ElementType};
 use anyhow::Result;
 
@@ -151,29 +151,6 @@ impl Declaration {
             _ => Value::Undefined,
         };
         Ok(Declaration { property, value })
-    }
-}
-
-#[derive(Debug, PartialEq, Eq, Copy, Clone)]
-pub enum Property {
-    Color,
-    BackgroundColor,
-    Margin,
-    MarginTop,
-    MarginLeft,
-    MarginRight,
-    MarginBottom,
-    Padding,
-    Width,
-    Height,
-    Display,
-    FontSize,
-    Undefined,
-}
-
-impl Property {
-    pub fn to_string(self: &Self) -> String {
-        property_to_string(*self)
     }
 }
 
